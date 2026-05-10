@@ -1,0 +1,32 @@
+{
+  "blocks": [
+    {
+      "id": "science",
+      "code": "S",
+      "questions": ["S1", "S2", "S3", "S4", "S5"]
+    },
+    {
+      "id": "math",
+      "code": "M",
+      "questions": ["M1", "M2", "M3", "M4", "M5"]
+    },
+    {
+      "id": "engineering",
+      "code": "E",
+      "questions": ["E1", "E2", "E3", "E4", "E5"]
+    },
+    {
+      "id": "technology",
+      "code": "T",
+      "questions": ["T1", "T2", "T3", "T4", "T5"]
+    },
+    {
+      "id": "career",
+      "code": "C",
+      "questions": ["C1", "C2", "C3", "C4", "C5"]
+    }
+  ],
+  "model_class_disciplines": ["S", "T", "E", "M"],
+  "scale_min": 1,
+  "scale_max": 7
+}

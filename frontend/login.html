@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Увійти — STEM Diagnostic</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header class="header">
+        <div class="header-top">
+            <div class="container header-inner">
+                <a href="index.html" class="logo" aria-label="STEM Diagnostic"><span class="logo-icon" aria-hidden="true">S</span><span class="logo-word">TEM Diagnostic</span></a>
+                <nav class="nav">
+                    <a href="index.html">Головна</a>
+                    <a href="contact.html">Контакти</a>
+                    <a href="register.html" class="btn btn-accent">Реєстрація</a>
+                </nav>
+                <button class="mobile-toggle" aria-label="Меню">☰</button>
+            </div>
+        </div>
+    </header>
+    <main class="container" style="padding-top: 6rem;">
+        <div class="card">
+            <h1 class="page-title">Увійти</h1>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="text" id="email" name="email" required autocomplete="email" inputmode="email" spellcheck="false" placeholder="name@example.com">
+                </div>
+                <div class="form-group">
+                    <label for="password">Пароль</label>
+                    <div class="password-field-wrap">
+                        <input type="password" id="password" name="password" required autocomplete="current-password">
+                        <button type="button" class="password-toggle" id="toggleLoginPassword">Показати</button>
+                    </div>
+                </div>
+                <div id="formError" class="form-error" style="display:none" role="alert"></div>
+                <button type="submit" class="btn btn-accent" style="width:100%;margin-top:1rem">Увійти</button>
+            </form>
+        </div>
+    </main>
+    <script src="app.js"></script>
+    <script>
+        if (window.stemRedirectIfLoggedIn) window.stemRedirectIfLoggedIn();
+        if (window.wirePasswordToggle) {
+            window.wirePasswordToggle(document.getElementById('toggleLoginPassword'), document.getElementById('password'));
+        }
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const errEl = document.getElementById('formError');
+            errEl.style.display = 'none';
+            let res;
+            let data;
+            try {
+                res = await fetch((window.API_BASE || '') + '/api/auth/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        email: document.getElementById('email').value,
+                        password: document.getElementById('password').value
+                    })
+                });
+                data = await res.json().catch(() => ({}));
+            } catch (err) {
+                errEl.textContent = window.formatFetchError ? window.formatFetchError(err) : 'Помилка мережі';
+                errEl.style.display = 'block';
+                return;
+            }
+            if (!res.ok) {
+                errEl.textContent = window.translateApiDetail ? window.translateApiDetail(data.detail) : (data.detail || 'Помилка входу');
+                errEl.style.display = 'block';
+                return;
+            }
+            if (window.setAuthToken) window.setAuthToken(data.access_token);
+            else localStorage.setItem('token', data.access_token);
+            const h = { 'Authorization': 'Bearer ' + data.access_token };
+            const b = window.API_BASE || '';
+            try {
+                const mr = await fetch(b + '/api/me', { headers: h });
+                const mu = await mr.json().catch(() => ({}));
+                if (mr.ok && mu.account_kind === 'student') {
+                    window.location.href = 'student-hub.html';
+                    return;
+                }
+            } catch (e) { /* fallback dashboard */ }
+            window.location.href = 'dashboard.html';
+        });
+    </script>
+    <script>document.querySelector('.mobile-toggle')?.addEventListener('click',()=>document.querySelector('.nav').classList.toggle('open'));</script>
+</body>
+</html>

@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Контакти — STEM Diagnostic</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <a class="skip-link" href="#main">Перейти до вмісту</a>
+    <header class="header">
+        <div class="header-top">
+            <div class="container header-inner">
+                <a href="index.html" class="logo" aria-label="STEM Diagnostic"><span class="logo-icon" aria-hidden="true">S</span><span class="logo-word">TEM Diagnostic</span></a>
+                <nav class="nav">
+                    <a href="index.html">Головна</a>
+                    <a href="index.html#about">Про проєкт</a>
+                    <a href="index.html#survey-demo">Опитування</a>
+                    <a href="contact.html">Контакти</a>
+                    <a href="login.html" class="btn btn-accent stem-auth-login">Увійти</a>
+                </nav>
+                <button class="mobile-toggle" aria-label="Меню">☰</button>
+            </div>
+        </div>
+    </header>
+    <main id="main" class="container" style="padding-top: 6rem;">
+        <div class="card">
+            <h1 class="page-title">Контакти</h1>
+            <p><strong>STEM. Шкільний діагностичний інструмент</strong></p>
+            <p>Для питань щодо використання платформи та технічної підтримки звертайтесь:</p>
+            <ul style="margin:1rem 0;padding-left:1.5rem">
+                <li><strong>Email:</strong> support@stem-diagnostic.ua</li>
+                <li><strong>Телефон:</strong> +380 XX XXX XX XX</li>
+                <li><strong>Адреса:</strong> м. Київ, Україна</li>
+            </ul>
+            <p>Автори дослідження: Ярослав Сапсай, Ірина Сапсай</p>
+        </div>
+    </main>
+    <footer class="footer">
+        <div class="container"><p>&copy; 2026 STEM. Шкільний діагностичний інструмент</p></div>
+    </footer>
+    <script src="app.js"></script>
+    <script>document.querySelector('.mobile-toggle')?.addEventListener('click',()=>document.querySelector('.nav').classList.toggle('open'));</script>
+</body>
+</html>

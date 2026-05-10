@@ -1,0 +1,23 @@
+fastapi==0.109.0
+uvicorn[standard]==0.27.0
+# >=2.0.36: сумісність з Python 3.13 (2.0.25 дає AssertionError у typing / SQLCoreOperations)
+sqlalchemy>=2.0.36,<3
+# >=2.9.10: готові wheels для Python 3.13+ на Windows; 2.9.9 часто змушує збирати з джерел і падає
+psycopg2-binary>=2.9.10,<3
+# Windows: локалізовані помилки PostgreSQL не ламають скрипти (UnicodeDecodeError у psycopg2); seed використовує pg_engine_util
+psycopg[binary]>=3.2,<4
+python-jose[cryptography]==3.3.0
+bcrypt>=4.0.1
+python-multipart==0.0.6
+# >=2.10: готові wheels pydantic-core для Python 3.13 на Windows; 2.5.x змушує збирати Rust і падає
+pydantic>=2.10.0,<3
+email-validator>=2.0.0
+pydantic-settings>=2.6.0,<3
+slowapi==0.1.9
+openpyxl==3.1.2
+python-docx==1.1.2
+matplotlib==3.8.2
+pytest==8.0.0
+pytest-cov==4.1.0
+httpx==0.26.0
+alembic==1.13.1

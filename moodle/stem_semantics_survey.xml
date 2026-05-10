@@ -1,0 +1,431 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<quiz>
+  <question type="description">
+    <name><text>STEM Semantics Survey - Intro</text></name>
+    <questiontext format="html">
+      <text><![CDATA[<p><strong>STEM Semantics Survey</strong></p>
+<p>Опитувальник складається з п'яти частин. Він оцінює ваше сприйняття наукових дисциплін. Заповнення займає близько 5 хвилин. Рекомендується відповідати швидко, орієнтуючись на перше враження. Відповіді є конфіденційними.</p>
+<p><strong>Інструкція:</strong> Обведіть число від 1 до 7, яке найкраще відображає ваше ставлення. 1 — лівий прикметник, 7 — правий прикметник.</p>]]></text>
+    </questiontext>
+  </question>
+  <question type="multichoice">
+    <name><text>S1 - Science: mundane-wonderful</text></name>
+    <questiontext format="html"><text><![CDATA[<p>Для мене <strong>НАУКА</strong> — це:</p><p>повсякденна — 1 — 2 — 3 — 4 — 5 — 6 — 7 — дивовижна</p>]]></text></questiontext>
+    <defaultgrade>0</defaultgrade>
+    <penalty>0</penalty>
+    <shuffleanswers>0</shuffleanswers>
+    <single>true</single>
+    <answernumbering>none</answernumbering>
+    <answer fraction="0"><text>1</text></answer>
+    <answer fraction="0"><text>2</text></answer>
+    <answer fraction="0"><text>3</text></answer>
+    <answer fraction="0"><text>4</text></answer>
+    <answer fraction="0"><text>5</text></answer>
+    <answer fraction="0"><text>6</text></answer>
+    <answer fraction="0"><text>7</text></answer>
+  </question>
+  <question type="multichoice">
+    <name><text>S2 - Science: unattractive-attractive</text></name>
+    <questiontext format="html"><text><![CDATA[<p>Для мене <strong>НАУКА</strong> — це:</p><p>неприваблива — 1 — 2 — 3 — 4 — 5 — 6 — 7 — приваблива</p>]]></text></questiontext>
+    <defaultgrade>0</defaultgrade>
+    <penalty>0</penalty>
+    <shuffleanswers>0</shuffleanswers>
+    <single>true</single>
+    <answernumbering>none</answernumbering>
+    <answer fraction="0"><text>1</text></answer>
+    <answer fraction="0"><text>2</text></answer>
+    <answer fraction="0"><text>3</text></answer>
+    <answer fraction="0"><text>4</text></answer>
+    <answer fraction="0"><text>5</text></answer>
+    <answer fraction="0"><text>6</text></answer>
+    <answer fraction="0"><text>7</text></answer>
+  </question>
+  <question type="multichoice">
+    <name><text>S3 - Science: unexciting-exciting</text></name>
+    <questiontext format="html"><text><![CDATA[<p>Для мене <strong>НАУКА</strong> — це:</p><p>незахоплююча — 1 — 2 — 3 — 4 — 5 — 6 — 7 — захоплююча</p>]]></text></questiontext>
+    <defaultgrade>0</defaultgrade>
+    <penalty>0</penalty>
+    <shuffleanswers>0</shuffleanswers>
+    <single>true</single>
+    <answernumbering>none</answernumbering>
+    <answer fraction="0"><text>1</text></answer>
+    <answer fraction="0"><text>2</text></answer>
+    <answer fraction="0"><text>3</text></answer>
+    <answer fraction="0"><text>4</text></answer>
+    <answer fraction="0"><text>5</text></answer>
+    <answer fraction="0"><text>6</text></answer>
+    <answer fraction="0"><text>7</text></answer>
+  </question>
+  <question type="multichoice">
+    <name><text>S4 - Science: means nothing-means a lot</text></name>
+    <questiontext format="html"><text><![CDATA[<p>Для мене <strong>НАУКА</strong> — це:</p><p>нічого не означає — 1 — 2 — 3 — 4 — 5 — 6 — 7 — багато значить</p>]]></text></questiontext>
+    <defaultgrade>0</defaultgrade>
+    <penalty>0</penalty>
+    <shuffleanswers>0</shuffleanswers>
+    <single>true</single>
+    <answernumbering>none</answernumbering>
+    <answer fraction="0"><text>1</text></answer>
+    <answer fraction="0"><text>2</text></answer>
+    <answer fraction="0"><text>3</text></answer>
+    <answer fraction="0"><text>4</text></answer>
+    <answer fraction="0"><text>5</text></answer>
+    <answer fraction="0"><text>6</text></answer>
+    <answer fraction="0"><text>7</text></answer>
+  </question>
+  <question type="multichoice">
+    <name><text>S5 - Science: boring-interesting</text></name>
+    <questiontext format="html"><text><![CDATA[<p>Для мене <strong>НАУКА</strong> — це:</p><p>нудна — 1 — 2 — 3 — 4 — 5 — 6 — 7 — цікава</p>]]></text></questiontext>
+    <defaultgrade>0</defaultgrade>
+    <penalty>0</penalty>
+    <shuffleanswers>0</shuffleanswers>
+    <single>true</single>
+    <answernumbering>none</answernumbering>
+    <answer fraction="0"><text>1</text></answer>
+    <answer fraction="0"><text>2</text></answer>
+    <answer fraction="0"><text>3</text></answer>
+    <answer fraction="0"><text>4</text></answer>
+    <answer fraction="0"><text>5</text></answer>
+    <answer fraction="0"><text>6</text></answer>
+    <answer fraction="0"><text>7</text></answer>
+  </question>
+  <question type="description">
+    <name><text>Block 2 - Math</text></name>
+    <questiontext format="html"><text><![CDATA[<p><strong>Блок 2: Для мене МАТЕМАТИКА — це ...</strong></p>]]></text></questiontext>
+  </question>
+  <question type="multichoice">
+    <name><text>M1 - Math: boring-interesting</text></name>
+    <questiontext format="html"><text><![CDATA[<p>Для мене <strong>МАТЕМАТИКА</strong> — це:</p><p>нудна — 1 — 2 — 3 — 4 — 5 — 6 — 7 — цікава</p>]]></text></questiontext>
+    <defaultgrade>0</defaultgrade>
+    <penalty>0</penalty>
+    <shuffleanswers>0</shuffleanswers>
+    <single>true</single>
+    <answernumbering>none</answernumbering>
+    <answer fraction="0"><text>1</text></answer>
+    <answer fraction="0"><text>2</text></answer>
+    <answer fraction="0"><text>3</text></answer>
+    <answer fraction="0"><text>4</text></answer>
+    <answer fraction="0"><text>5</text></answer>
+    <answer fraction="0"><text>6</text></answer>
+    <answer fraction="0"><text>7</text></answer>
+  </question>
+  <question type="multichoice">
+    <name><text>M2 - Math: unattractive-attractive</text></name>
+    <questiontext format="html"><text><![CDATA[<p>Для мене <strong>МАТЕМАТИКА</strong> — це:</p><p>неприваблива — 1 — 2 — 3 — 4 — 5 — 6 — 7 — приваблива</p>]]></text></questiontext>
+    <defaultgrade>0</defaultgrade>
+    <penalty>0</penalty>
+    <shuffleanswers>0</shuffleanswers>
+    <single>true</single>
+    <answernumbering>none</answernumbering>
+    <answer fraction="0"><text>1</text></answer>
+    <answer fraction="0"><text>2</text></answer>
+    <answer fraction="0"><text>3</text></answer>
+    <answer fraction="0"><text>4</text></answer>
+    <answer fraction="0"><text>5</text></answer>
+    <answer fraction="0"><text>6</text></answer>
+    <answer fraction="0"><text>7</text></answer>
+  </question>
+  <question type="multichoice">
+    <name><text>M3 - Math: mundane-wonderful</text></name>
+    <questiontext format="html"><text><![CDATA[<p>Для мене <strong>МАТЕМАТИКА</strong> — це:</p><p>повсякденна — 1 — 2 — 3 — 4 — 5 — 6 — 7 — дивовижна</p>]]></text></questiontext>
+    <defaultgrade>0</defaultgrade>
+    <penalty>0</penalty>
+    <shuffleanswers>0</shuffleanswers>
+    <single>true</single>
+    <answernumbering>none</answernumbering>
+    <answer fraction="0"><text>1</text></answer>
+    <answer fraction="0"><text>2</text></answer>
+    <answer fraction="0"><text>3</text></answer>
+    <answer fraction="0"><text>4</text></answer>
+    <answer fraction="0"><text>5</text></answer>
+    <answer fraction="0"><text>6</text></answer>
+    <answer fraction="0"><text>7</text></answer>
+  </question>
+  <question type="multichoice">
+    <name><text>M4 - Math: unexciting-exciting</text></name>
+    <questiontext format="html"><text><![CDATA[<p>Для мене <strong>МАТЕМАТИКА</strong> — це:</p><p>незахоплююча — 1 — 2 — 3 — 4 — 5 — 6 — 7 — захоплююча</p>]]></text></questiontext>
+    <defaultgrade>0</defaultgrade>
+    <penalty>0</penalty>
+    <shuffleanswers>0</shuffleanswers>
+    <single>true</single>
+    <answernumbering>none</answernumbering>
+    <answer fraction="0"><text>1</text></answer>
+    <answer fraction="0"><text>2</text></answer>
+    <answer fraction="0"><text>3</text></answer>
+    <answer fraction="0"><text>4</text></answer>
+    <answer fraction="0"><text>5</text></answer>
+    <answer fraction="0"><text>6</text></answer>
+    <answer fraction="0"><text>7</text></answer>
+  </question>
+  <question type="multichoice">
+    <name><text>M5 - Math: means nothing-means a lot</text></name>
+    <questiontext format="html"><text><![CDATA[<p>Для мене <strong>МАТЕМАТИКА</strong> — це:</p><p>нічого не означає — 1 — 2 — 3 — 4 — 5 — 6 — 7 — багато значить</p>]]></text></questiontext>
+    <defaultgrade>0</defaultgrade>
+    <penalty>0</penalty>
+    <shuffleanswers>0</shuffleanswers>
+    <single>true</single>
+    <answernumbering>none</answernumbering>
+    <answer fraction="0"><text>1</text></answer>
+    <answer fraction="0"><text>2</text></answer>
+    <answer fraction="0"><text>3</text></answer>
+    <answer fraction="0"><text>4</text></answer>
+    <answer fraction="0"><text>5</text></answer>
+    <answer fraction="0"><text>6</text></answer>
+    <answer fraction="0"><text>7</text></answer>
+  </question>
+  <question type="description">
+    <name><text>Block 3 - Engineering</text></name>
+    <questiontext format="html"><text><![CDATA[<p><strong>Блок 3: Для мене ІНЖЕНЕРІЯ — це ...</strong></p>]]></text></questiontext>
+  </question>
+  <question type="multichoice">
+    <name><text>E1 - Engineering: unattractive-attractive</text></name>
+    <questiontext format="html"><text><![CDATA[<p>Для мене <strong>ІНЖЕНЕРІЯ</strong> — це:</p><p>неприваблива — 1 — 2 — 3 — 4 — 5 — 6 — 7 — приваблива</p>]]></text></questiontext>
+    <defaultgrade>0</defaultgrade>
+    <penalty>0</penalty>
+    <shuffleanswers>0</shuffleanswers>
+    <single>true</single>
+    <answernumbering>none</answernumbering>
+    <answer fraction="0"><text>1</text></answer>
+    <answer fraction="0"><text>2</text></answer>
+    <answer fraction="0"><text>3</text></answer>
+    <answer fraction="0"><text>4</text></answer>
+    <answer fraction="0"><text>5</text></answer>
+    <answer fraction="0"><text>6</text></answer>
+    <answer fraction="0"><text>7</text></answer>
+  </question>
+  <question type="multichoice">
+    <name><text>E2 - Engineering: mundane-wonderful</text></name>
+    <questiontext format="html"><text><![CDATA[<p>Для мене <strong>ІНЖЕНЕРІЯ</strong> — це:</p><p>повсякденна — 1 — 2 — 3 — 4 — 5 — 6 — 7 — дивовижна</p>]]></text></questiontext>
+    <defaultgrade>0</defaultgrade>
+    <penalty>0</penalty>
+    <shuffleanswers>0</shuffleanswers>
+    <single>true</single>
+    <answernumbering>none</answernumbering>
+    <answer fraction="0"><text>1</text></answer>
+    <answer fraction="0"><text>2</text></answer>
+    <answer fraction="0"><text>3</text></answer>
+    <answer fraction="0"><text>4</text></answer>
+    <answer fraction="0"><text>5</text></answer>
+    <answer fraction="0"><text>6</text></answer>
+    <answer fraction="0"><text>7</text></answer>
+  </question>
+  <question type="multichoice">
+    <name><text>E3 - Engineering: means nothing-means a lot</text></name>
+    <questiontext format="html"><text><![CDATA[<p>Для мене <strong>ІНЖЕНЕРІЯ</strong> — це:</p><p>нічого не означає — 1 — 2 — 3 — 4 — 5 — 6 — 7 — багато значить</p>]]></text></questiontext>
+    <defaultgrade>0</defaultgrade>
+    <penalty>0</penalty>
+    <shuffleanswers>0</shuffleanswers>
+    <single>true</single>
+    <answernumbering>none</answernumbering>
+    <answer fraction="0"><text>1</text></answer>
+    <answer fraction="0"><text>2</text></answer>
+    <answer fraction="0"><text>3</text></answer>
+    <answer fraction="0"><text>4</text></answer>
+    <answer fraction="0"><text>5</text></answer>
+    <answer fraction="0"><text>6</text></answer>
+    <answer fraction="0"><text>7</text></answer>
+  </question>
+  <question type="multichoice">
+    <name><text>E4 - Engineering: unexciting-exciting</text></name>
+    <questiontext format="html"><text><![CDATA[<p>Для мене <strong>ІНЖЕНЕРІЯ</strong> — це:</p><p>незахоплююча — 1 — 2 — 3 — 4 — 5 — 6 — 7 — захоплююча</p>]]></text></questiontext>
+    <defaultgrade>0</defaultgrade>
+    <penalty>0</penalty>
+    <shuffleanswers>0</shuffleanswers>
+    <single>true</single>
+    <answernumbering>none</answernumbering>
+    <answer fraction="0"><text>1</text></answer>
+    <answer fraction="0"><text>2</text></answer>
+    <answer fraction="0"><text>3</text></answer>
+    <answer fraction="0"><text>4</text></answer>
+    <answer fraction="0"><text>5</text></answer>
+    <answer fraction="0"><text>6</text></answer>
+    <answer fraction="0"><text>7</text></answer>
+  </question>
+  <question type="multichoice">
+    <name><text>E5 - Engineering: boring-interesting</text></name>
+    <questiontext format="html"><text><![CDATA[<p>Для мене <strong>ІНЖЕНЕРІЯ</strong> — це:</p><p>нудна — 1 — 2 — 3 — 4 — 5 — 6 — 7 — цікава</p>]]></text></questiontext>
+    <defaultgrade>0</defaultgrade>
+    <penalty>0</penalty>
+    <shuffleanswers>0</shuffleanswers>
+    <single>true</single>
+    <answernumbering>none</answernumbering>
+    <answer fraction="0"><text>1</text></answer>
+    <answer fraction="0"><text>2</text></answer>
+    <answer fraction="0"><text>3</text></answer>
+    <answer fraction="0"><text>4</text></answer>
+    <answer fraction="0"><text>5</text></answer>
+    <answer fraction="0"><text>6</text></answer>
+    <answer fraction="0"><text>7</text></answer>
+  </question>
+  <question type="description">
+    <name><text>Block 4 - Technology</text></name>
+    <questiontext format="html"><text><![CDATA[<p><strong>Блок 4: Для мене ТЕХНОЛОГІЇ — це ...</strong></p>]]></text></questiontext>
+  </question>
+  <question type="multichoice">
+    <name><text>T1 - Technology: unattractive-attractive</text></name>
+    <questiontext format="html"><text><![CDATA[<p>Для мене <strong>ТЕХНОЛОГІЇ</strong> — це:</p><p>неприваблива — 1 — 2 — 3 — 4 — 5 — 6 — 7 — приваблива</p>]]></text></questiontext>
+    <defaultgrade>0</defaultgrade>
+    <penalty>0</penalty>
+    <shuffleanswers>0</shuffleanswers>
+    <single>true</single>
+    <answernumbering>none</answernumbering>
+    <answer fraction="0"><text>1</text></answer>
+    <answer fraction="0"><text>2</text></answer>
+    <answer fraction="0"><text>3</text></answer>
+    <answer fraction="0"><text>4</text></answer>
+    <answer fraction="0"><text>5</text></answer>
+    <answer fraction="0"><text>6</text></answer>
+    <answer fraction="0"><text>7</text></answer>
+  </question>
+  <question type="multichoice">
+    <name><text>T2 - Technology: means nothing-means a lot</text></name>
+    <questiontext format="html"><text><![CDATA[<p>Для мене <strong>ТЕХНОЛОГІЇ</strong> — це:</p><p>нічого не означає — 1 — 2 — 3 — 4 — 5 — 6 — 7 — багато значить</p>]]></text></questiontext>
+    <defaultgrade>0</defaultgrade>
+    <penalty>0</penalty>
+    <shuffleanswers>0</shuffleanswers>
+    <single>true</single>
+    <answernumbering>none</answernumbering>
+    <answer fraction="0"><text>1</text></answer>
+    <answer fraction="0"><text>2</text></answer>
+    <answer fraction="0"><text>3</text></answer>
+    <answer fraction="0"><text>4</text></answer>
+    <answer fraction="0"><text>5</text></answer>
+    <answer fraction="0"><text>6</text></answer>
+    <answer fraction="0"><text>7</text></answer>
+  </question>
+  <question type="multichoice">
+    <name><text>T3 - Technology: boring-interesting</text></name>
+    <questiontext format="html"><text><![CDATA[<p>Для мене <strong>ТЕХНОЛОГІЇ</strong> — це:</p><p>нудна — 1 — 2 — 3 — 4 — 5 — 6 — 7 — цікава</p>]]></text></questiontext>
+    <defaultgrade>0</defaultgrade>
+    <penalty>0</penalty>
+    <shuffleanswers>0</shuffleanswers>
+    <single>true</single>
+    <answernumbering>none</answernumbering>
+    <answer fraction="0"><text>1</text></answer>
+    <answer fraction="0"><text>2</text></answer>
+    <answer fraction="0"><text>3</text></answer>
+    <answer fraction="0"><text>4</text></answer>
+    <answer fraction="0"><text>5</text></answer>
+    <answer fraction="0"><text>6</text></answer>
+    <answer fraction="0"><text>7</text></answer>
+  </question>
+  <question type="multichoice">
+    <name><text>T4 - Technology: unexciting-exciting</text></name>
+    <questiontext format="html"><text><![CDATA[<p>Для мене <strong>ТЕХНОЛОГІЇ</strong> — це:</p><p>незахоплююча — 1 — 2 — 3 — 4 — 5 — 6 — 7 — захоплююча</p>]]></text></questiontext>
+    <defaultgrade>0</defaultgrade>
+    <penalty>0</penalty>
+    <shuffleanswers>0</shuffleanswers>
+    <single>true</single>
+    <answernumbering>none</answernumbering>
+    <answer fraction="0"><text>1</text></answer>
+    <answer fraction="0"><text>2</text></answer>
+    <answer fraction="0"><text>3</text></answer>
+    <answer fraction="0"><text>4</text></answer>
+    <answer fraction="0"><text>5</text></answer>
+    <answer fraction="0"><text>6</text></answer>
+    <answer fraction="0"><text>7</text></answer>
+  </question>
+  <question type="multichoice">
+    <name><text>T5 - Technology: mundane-wonderful</text></name>
+    <questiontext format="html"><text><![CDATA[<p>Для мене <strong>ТЕХНОЛОГІЇ</strong> — це:</p><p>повсякденна — 1 — 2 — 3 — 4 — 5 — 6 — 7 — дивовижна</p>]]></text></questiontext>
+    <defaultgrade>0</defaultgrade>
+    <penalty>0</penalty>
+    <shuffleanswers>0</shuffleanswers>
+    <single>true</single>
+    <answernumbering>none</answernumbering>
+    <answer fraction="0"><text>1</text></answer>
+    <answer fraction="0"><text>2</text></answer>
+    <answer fraction="0"><text>3</text></answer>
+    <answer fraction="0"><text>4</text></answer>
+    <answer fraction="0"><text>5</text></answer>
+    <answer fraction="0"><text>6</text></answer>
+    <answer fraction="0"><text>7</text></answer>
+  </question>
+  <question type="description">
+    <name><text>Block 5 - Career</text></name>
+    <questiontext format="html"><text><![CDATA[<p><strong>Блок 5: Для мене КАР'ЄРА в науці, математиці, інженерії або технологіях — це ...</strong></p>]]></text></questiontext>
+  </question>
+  <question type="multichoice">
+    <name><text>C1 - Career: means nothing-means a lot</text></name>
+    <questiontext format="html"><text><![CDATA[<p>Для мене <strong>КАР'ЄРА в STEM</strong> — це:</p><p>нічого не означає — 1 — 2 — 3 — 4 — 5 — 6 — 7 — багато значить</p>]]></text></questiontext>
+    <defaultgrade>0</defaultgrade>
+    <penalty>0</penalty>
+    <shuffleanswers>0</shuffleanswers>
+    <single>true</single>
+    <answernumbering>none</answernumbering>
+    <answer fraction="0"><text>1</text></answer>
+    <answer fraction="0"><text>2</text></answer>
+    <answer fraction="0"><text>3</text></answer>
+    <answer fraction="0"><text>4</text></answer>
+    <answer fraction="0"><text>5</text></answer>
+    <answer fraction="0"><text>6</text></answer>
+    <answer fraction="0"><text>7</text></answer>
+  </question>
+  <question type="multichoice">
+    <name><text>C2 - Career: boring-interesting</text></name>
+    <questiontext format="html"><text><![CDATA[<p>Для мене <strong>КАР'ЄРА в STEM</strong> — це:</p><p>нудна — 1 — 2 — 3 — 4 — 5 — 6 — 7 — цікава</p>]]></text></questiontext>
+    <defaultgrade>0</defaultgrade>
+    <penalty>0</penalty>
+    <shuffleanswers>0</shuffleanswers>
+    <single>true</single>
+    <answernumbering>none</answernumbering>
+    <answer fraction="0"><text>1</text></answer>
+    <answer fraction="0"><text>2</text></answer>
+    <answer fraction="0"><text>3</text></answer>
+    <answer fraction="0"><text>4</text></answer>
+    <answer fraction="0"><text>5</text></answer>
+    <answer fraction="0"><text>6</text></answer>
+    <answer fraction="0"><text>7</text></answer>
+  </question>
+  <question type="multichoice">
+    <name><text>C3 - Career: unexciting-exciting</text></name>
+    <questiontext format="html"><text><![CDATA[<p>Для мене <strong>КАР'ЄРА в STEM</strong> — це:</p><p>незахоплююча — 1 — 2 — 3 — 4 — 5 — 6 — 7 — захоплююча</p>]]></text></questiontext>
+    <defaultgrade>0</defaultgrade>
+    <penalty>0</penalty>
+    <shuffleanswers>0</shuffleanswers>
+    <single>true</single>
+    <answernumbering>none</answernumbering>
+    <answer fraction="0"><text>1</text></answer>
+    <answer fraction="0"><text>2</text></answer>
+    <answer fraction="0"><text>3</text></answer>
+    <answer fraction="0"><text>4</text></answer>
+    <answer fraction="0"><text>5</text></answer>
+    <answer fraction="0"><text>6</text></answer>
+    <answer fraction="0"><text>7</text></answer>
+  </question>
+  <question type="multichoice">
+    <name><text>C4 - Career: mundane-wonderful</text></name>
+    <questiontext format="html"><text><![CDATA[<p>Для мене <strong>КАР'ЄРА в STEM</strong> — це:</p><p>повсякденна — 1 — 2 — 3 — 4 — 5 — 6 — 7 — дивовижна</p>]]></text></questiontext>
+    <defaultgrade>0</defaultgrade>
+    <penalty>0</penalty>
+    <shuffleanswers>0</shuffleanswers>
+    <single>true</single>
+    <answernumbering>none</answernumbering>
+    <answer fraction="0"><text>1</text></answer>
+    <answer fraction="0"><text>2</text></answer>
+    <answer fraction="0"><text>3</text></answer>
+    <answer fraction="0"><text>4</text></answer>
+    <answer fraction="0"><text>5</text></answer>
+    <answer fraction="0"><text>6</text></answer>
+    <answer fraction="0"><text>7</text></answer>
+  </question>
+  <question type="multichoice">
+    <name><text>C5 - Career: unattractive-attractive</text></name>
+    <questiontext format="html"><text><![CDATA[<p>Для мене <strong>КАР'ЄРА в STEM</strong> — це:</p><p>неприваблива — 1 — 2 — 3 — 4 — 5 — 6 — 7 — приваблива</p>]]></text></questiontext>
+    <defaultgrade>0</defaultgrade>
+    <penalty>0</penalty>
+    <shuffleanswers>0</shuffleanswers>
+    <single>true</single>
+    <answernumbering>none</answernumbering>
+    <answer fraction="0"><text>1</text></answer>
+    <answer fraction="0"><text>2</text></answer>
+    <answer fraction="0"><text>3</text></answer>
+    <answer fraction="0"><text>4</text></answer>
+    <answer fraction="0"><text>5</text></answer>
+    <answer fraction="0"><text>6</text></answer>
+    <answer fraction="0"><text>7</text></answer>
+  </question>
+  <question type="description">
+    <name><text>Thank you</text></name>
+    <questiontext format="html"><text><![CDATA[<p><strong>Дякуємо за Ваш час.</strong></p>]]></text></questiontext>
+  </question>
+</quiz>

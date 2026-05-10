@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Мої заняття та опитування — STEM</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header class="header">
+        <div class="header-top">
+            <div class="container header-inner">
+                <a href="index.html" class="logo" aria-label="STEM Diagnostic"><span class="logo-icon" aria-hidden="true">S</span><span class="logo-word">TEM Diagnostic</span></a>
+                <nav class="nav">
+                    <span style="color:var(--text-light);font-size:0.9rem" id="whoAmI"></span>
+                    <a href="account.html">Акаунт</a>
+                    <a href="#" id="logoutBtn" class="btn btn-ghost">Вийти</a>
+                </nav>
+                <button class="mobile-toggle" aria-label="Меню">☰</button>
+            </div>
+        </div>
+    </header>
+    <main class="container" style="padding-top: 6rem; max-width: 40rem;">
+        <h1 class="page-title">Мої заняття та опитування</h1>
+        <p id="lead" style="color:var(--text-light);margin-bottom:1.5rem">Одна сторінка для учня: записи занять, Moodle та опитування STEM.</p>
+
+        <div class="card" style="margin-bottom:1.25rem">
+            <h2 style="font-size:1.1rem;margin-bottom:0.75rem">Записи занять та матеріали</h2>
+            <p id="recordingsBlock" style="font-size:0.95rem">Завантаження…</p>
+        </div>
+
+        <div class="card" style="margin-bottom:1.25rem">
+            <h2 style="font-size:1.1rem;margin-bottom:0.75rem">Опитування в Moodle</h2>
+            <p id="moodleBlock" style="font-size:0.95rem">Завантаження…</p>
+        </div>
+
+        <div class="card" style="margin-bottom:1.25rem">
+            <h2 style="font-size:1.1rem;margin-bottom:0.75rem">Опитування STEM (наш сайт)</h2>
+            <p style="font-size:0.95rem;margin-bottom:0.75rem">Пройдіть опитування семантики STEM на цій платформі (те саме питання можна імпортувати в Moodle за <code>moodle/stem_semantics_survey.xml</code>).</p>
+            <p id="surveyLinks">…</p>
+            <p style="margin-top:0.75rem"><a href="survey.html" class="btn btn-accent">Відкрити опитування</a></p>
+        </div>
+
+        <div class="card" id="recCard">
+            <h2 style="font-size:1.1rem;margin-bottom:0.75rem">Ваші результати та рекомендації</h2>
+            <div id="studentRecs" style="font-size:0.95rem" aria-live="polite">Завантаження…</div>
+        </div>
+    </main>
+    <script src="app.js"></script>
+    <script>
+        const base = window.API_BASE || '';
+        const token = window.getToken ? window.getToken() : localStorage.getItem('token');
+        if (!token) window.location.href = 'login.html';
+        const headers = { 'Authorization': 'Bearer ' + token };
+
+        document.getElementById('logoutBtn').addEventListener('click', (e) => {
+            e.preventDefault();
+            if (window.clearAuthToken) window.clearAuthToken();
+            else localStorage.removeItem('token');
+            window.location.href = 'index.html';
+        });
+
+        function esc(s) {
+            const d = document.createElement('div');
+            d.textContent = s == null ? '' : String(s);
+            return d.innerHTML;
+        }
+        function hrefOnly(u) {
+            const s = (u || '').trim();
+            if (!s || !/^https?:\/\//i.test(s)) return '';
+            return s.replace(/"/g, '%22');
+        }
+
+        fetch(base + '/api/me', { headers }).then(r => {
+            if (!r.ok) { window.location.href = 'login.html'; return null; }
+            return r.json();
+        }).then(user => {
+            if (!user) return;
+            if (user.account_kind !== 'student') {
+                window.location.replace('dashboard.html');
+                return;
+            }
+            document.getElementById('whoAmI').textContent = user.email || '';
+
+            let mat = '';
+            const rec = hrefOnly(user.recordings_url);
+            if (rec) mat += '<div style="margin-bottom:0.5rem"><a href="' + rec + '" target="_blank" rel="noopener">Записи (глобальне посилання сервера)</a></div>';
+            const lp = hrefOnly(user.lessons_url_parallel);
+            if (lp) mat += '<div style="margin-bottom:0.5rem"><strong>Уроки для вашої паралелі</strong> (завуч): <a href="' + lp + '" target="_blank" rel="noopener">відкрити</a></div>';
+            const ls = hrefOnly(user.lessons_url_school);
+            if (ls) mat += '<div style="margin-bottom:0.5rem"><strong>Матеріали для школи</strong> (директор): <a href="' + ls + '" target="_blank" rel="noopener">відкрити</a></div>';
+            document.getElementById('recordingsBlock').innerHTML = mat || '<span style="color:var(--text-light)">Посилання додасть завуч/директор (API portal-links) або адміністратор сервера (<code>STUDENT_RECORDINGS_URL</code>).</span>';
+
+            const mood = hrefOnly(user.moodle_url);
+            const mv = user.moodle_visible === true;
+            document.getElementById('moodleBlock').innerHTML = (mv && mood)
+                ? '<p>Завуч або директор увімкнув посилання на опитування в Moodle для вашого класу.</p><p><a href="' + mood + '" class="btn btn-accent" target="_blank" rel="noopener">Перейти до опитування в Moodle</a></p>'
+                : '<p style="color:var(--text-light)">Посилання на Moodle з’являється лише після того, як завуч або директор позначить його для вашого класу (<code>PATCH /api/classes/…/survey-flags</code>).</p><p style="font-size:0.9rem">Імпорт питань: <code>moodle/stem_semantics_survey.xml</code></p>';
+
+            return Promise.all([
+                fetch(base + '/api/surveys', { headers }).then(r => r.ok ? r.json() : []),
+                fetch(base + '/api/me/recommendations', { headers }).then(r => r.ok ? r.json() : {}),
+            ]);
+        }).then((pair) => {
+            if (!pair || !Array.isArray(pair)) return;
+            const surveys = pair[0];
+            const rec = pair[1];
+            const elS = document.getElementById('surveyLinks');
+            if (Array.isArray(surveys)) {
+                elS.innerHTML = surveys.length
+                    ? surveys.map(s => '• <a href="survey.html?survey_id=' + encodeURIComponent(s.id) + '">' + esc(s.name) + '</a><br>').join('')
+                    : '<span style="color:var(--text-light)">Немає доступних опитувань.</span>';
+            }
+            const el = document.getElementById('studentRecs');
+            if (!rec || !rec.ranking) {
+                el.innerHTML = '<p style="color:var(--text-light)">Після проходження опитування тут з’явиться ранжування STEM та персональні орієнтири.</p>';
+                return;
+            }
+            let html = '<p><strong>Ранжування:</strong> ' + esc(rec.ranking) + '</p>';
+            html += '<p style="margin-top:0.35rem">S: ' + esc(rec.s_avg) + ' · T: ' + esc(rec.t_avg) + ' · E: ' + esc(rec.e_avg) + ' · M: ' + esc(rec.m_avg) + '</p>';
+            if (rec.recommendations && rec.recommendations.length) {
+                html += '<ul style="padding-left:1.25rem;margin-top:0.5rem">';
+                rec.recommendations.forEach(x => {
+                    html += '<li style="margin-bottom:0.6rem"><strong>' + esc(x.title || '') + '</strong>';
+                    if (x.video_url) {
+                        const vu = hrefOnly(x.video_url);
+                        if (vu) html += '<div style="margin-top:0.35rem"><a href="' + vu + '" target="_blank" rel="noopener">' + esc(x.video_title || 'Відео') + '</a></div>';
+                    }
+                    if (x.course_url) {
+                        const cu = hrefOnly(x.course_url);
+                        if (cu) html += '<div style="margin-top:0.25rem"><a href="' + cu + '" target="_blank" rel="noopener">' + esc(x.course_title || 'Курс') + '</a></div>';
+                    }
+                    html += '<ul style="margin-top:0.25rem">';
+                    (x.hints || []).forEach(h => { html += '<li>' + esc(h) + '</li>'; });
+                    html += '</ul></li>';
+                });
+                html += '</ul>';
+            }
+            el.innerHTML = html;
+        }).catch(() => {
+            document.getElementById('surveyLinks').textContent = 'Не вдалося завантажити список.';
+            document.getElementById('studentRecs').textContent = 'Не вдалося завантажити рекомендації.';
+        });
+
+        document.querySelector('.mobile-toggle')?.addEventListener('click', () => document.querySelector('.nav').classList.toggle('open'));
+    </script>
+</body>
+</html>

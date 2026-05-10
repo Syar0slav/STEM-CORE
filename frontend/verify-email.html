@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Підтвердження email — STEM Diagnostic</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <main class="container" style="padding-top: 6rem; max-width: 520px;">
+        <div class="card">
+            <h1 class="page-title">Підтвердження email</h1>
+            <p id="status" style="line-height:1.6">Зачекайте…</p>
+            <p id="next" style="display:none;margin-top:1rem"><a href="login.html" class="btn btn-accent">Увійти</a></p>
+        </div>
+    </main>
+    <script src="app.js"></script>
+    <script>
+        (async function () {
+            const status = document.getElementById('status');
+            const next = document.getElementById('next');
+            const params = new URLSearchParams(location.search);
+            const token = params.get('token');
+            if (!token) {
+                status.textContent = 'Посилання некоректне (немає токена).';
+                return;
+            }
+            const base = window.API_BASE || '';
+            try {
+                const r = await fetch(base + '/api/auth/verify-email', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ token: token.trim() }),
+                });
+                const data = await r.json().catch(() => ({}));
+                if (!r.ok) {
+                    status.textContent = window.translateApiDetail
+                        ? window.translateApiDetail(data.detail)
+                        : (data.detail || 'Помилка');
+                    return;
+                }
+                if (data.access_token) {
+                    if (window.setAuthToken) window.setAuthToken(data.access_token);
+                    else localStorage.setItem('token', data.access_token);
+                    status.textContent = 'Email підтверджено. Переходимо…';
+                    try {
+                        const mu = await window.apiJson('/api/me');
+                        window.location.href = mu.account_kind === 'student' ? 'student-hub.html' : 'dashboard.html';
+                    } catch (e) {
+                        window.location.href = 'dashboard.html';
+                    }
+                    return;
+                }
+                status.textContent = 'Email підтверджено. Ви можете увійти в систему.';
+                next.style.display = 'block';
+            } catch (e) {
+                status.textContent = window.formatFetchError ? window.formatFetchError(e) : 'Помилка мережі';
+            }
+        })();
+    </script>
+</body>
+</html>

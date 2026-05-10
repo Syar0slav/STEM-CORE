@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Реєстрація — STEM Diagnostic</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <a class="skip-link" href="#main-content">Перейти до форми реєстрації</a>
+    <header class="header">
+        <div class="header-top">
+            <div class="container header-inner">
+                <a href="index.html" class="logo" aria-label="STEM Diagnostic"><span class="logo-icon" aria-hidden="true">S</span><span class="logo-word">TEM Diagnostic</span></a>
+                <nav class="nav">
+                    <a href="index.html">Головна</a>
+                    <a href="login.html" class="btn btn-ghost stem-auth-login">Увійти</a>
+                </nav>
+                <button class="mobile-toggle" aria-label="Меню">☰</button>
+            </div>
+        </div>
+    </header>
+    <main id="main-content" class="container register-page" style="padding-top: 6rem;">
+        <div class="card card--register" id="registerCard">
+            <h1 class="page-title">Реєстрація</h1>
+            <p class="register-lead">Створення облікового запису для входу в платформу. Для вчителів, завучів і директорів — <a href="staff-register.html">реєстрація персоналу</a> (потрібен код запрошення).</p>
+            <div id="registerSuccess" class="form-success" style="display:none" role="status"></div>
+            <form id="registerForm">
+                <div class="form-group">
+                    <label for="fullName">ПІБ</label>
+                    <input type="text" id="fullName" name="fullName" autocomplete="name" aria-describedby="fullName-hint">
+                    <span id="fullName-hint" class="pwd-hint">Необовʼязково.</span>
+                </div>
+                <div class="form-group">
+                    <label for="email">Email <span class="req-star" aria-hidden="true">*</span></label>
+                    <input type="text" id="email" name="email" required autocomplete="email" inputmode="email" spellcheck="false" aria-required="true" placeholder="name@example.com">
+                </div>
+                <div class="form-group">
+                    <label for="password">Пароль <span class="req-star" aria-hidden="true">*</span></label>
+                    <div class="password-field-wrap">
+                        <input type="password" id="password" name="password" required autocomplete="new-password" minlength="8" aria-describedby="pwdHint pwdStrength" aria-required="true">
+                        <button type="button" class="password-toggle" id="togglePassword">Показати</button>
+                    </div>
+                    <p id="pwdHint" class="pwd-hint">Мінімум 8 символів: велика й мала латинські або кириличні літери, цифра, спецсимвол (!@#$…).</p>
+                    <div id="pwdStrength" class="pwd-strength pwd-strength-weak" aria-hidden="true">
+                        <div class="pwd-meter"><div class="pwd-meter-fill"></div></div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="password2">Підтвердження паролю <span class="req-star" aria-hidden="true">*</span></label>
+                    <div class="password-field-wrap">
+                        <input type="password" id="password2" name="password2" required autocomplete="new-password" minlength="8" aria-required="true">
+                        <button type="button" class="password-toggle" id="togglePassword2">Показати</button>
+                    </div>
+                </div>
+                <fieldset class="form-group captcha-fieldset">
+                    <legend class="captcha-legend" id="captchaLegend">Обчисліть приклад <abbr class="req-star" title="обовʼязкове поле" aria-label="обовʼязкове поле">*</abbr></legend>
+                    <div class="captcha-panel" id="captchaPanel" role="group" aria-labelledby="captchaLegend">
+                        <div class="captcha-row">
+                            <span class="captcha-equation" id="captchaQuestion" aria-hidden="true">…</span>
+                            <span id="captchaLive" class="sr-only" aria-live="polite"></span>
+                            <input type="text" id="captchaAnswer" name="captchaAnswer" class="captcha-answer" required inputmode="numeric" autocomplete="off" placeholder="Число" aria-describedby="captchaFormatHint" aria-required="true">
+                        </div>
+                        <p id="captchaFormatHint" class="pwd-hint" style="margin-top:0.75rem;margin-bottom:0">Введіть одне число — результат обчислення (наприклад, суму).</p>
+                        <div class="captcha-actions">
+                            <button type="button" class="btn-captcha-reveal" id="captchaReveal" aria-pressed="false" aria-controls="captchaQuestion">Показати чітко</button>
+                            <button type="button" class="btn btn-outline btn-inline" id="captchaRefresh">Інший приклад</button>
+                        </div>
+                    </div>
+                    <input type="hidden" id="captchaToken" value="">
+                </fieldset>
+                <div id="formError" class="form-error" style="display:none" role="alert" aria-live="assertive"></div>
+                <button type="submit" class="btn btn-accent btn-register-submit">Зареєструватися</button>
+            </form>
+        </div>
+    </main>
+    <script src="app.js"></script>
+    <script>
+        if (window.stemRedirectIfLoggedIn) window.stemRedirectIfLoggedIn();
+        const base = window.API_BASE || '';
+
+        function updatePwdMeter(pwd) {
+            const rules = [
+                pwd.length >= 8,
+                /[A-ZА-ЯІЇЄҐЁ]/.test(pwd),
+                /[a-zа-яіїєґё]/.test(pwd),
+                /\d/.test(pwd),
+                /[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?`~]/.test(pwd)
+            ];
+            const n = rules.filter(Boolean).length;
+            const el = document.getElementById('pwdStrength');
+            el.className = 'pwd-strength';
+            if (pwd.length === 0) el.classList.add('pwd-strength-weak');
+            else if (n <= 2) el.classList.add('pwd-strength-weak');
+            else if (n === 3) el.classList.add('pwd-strength-fair');
+            else if (n === 4) el.classList.add('pwd-strength-good');
+            else el.classList.add('pwd-strength-strong');
+        }
+
+        const captchaPanel = document.getElementById('captchaPanel');
+        const captchaReveal = document.getElementById('captchaReveal');
+
+        async function loadCaptcha() {
+            const qEl = document.getElementById('captchaQuestion');
+            const tokEl = document.getElementById('captchaToken');
+            const ansEl = document.getElementById('captchaAnswer');
+            const liveEl = document.getElementById('captchaLive');
+            qEl.textContent = '…';
+            tokEl.value = '';
+            captchaPanel.classList.remove('is-revealed');
+            captchaReveal.setAttribute('aria-pressed', 'false');
+            captchaReveal.textContent = 'Показати чітко';
+            try {
+                const r = await fetch(base + '/api/auth/register-captcha');
+                const j = await r.json();
+                if (!r.ok) throw new Error(j.detail || 'Капча');
+                tokEl.value = j.token;
+                qEl.textContent = j.question;
+                ansEl.value = '';
+                if (liveEl) {
+                    liveEl.textContent = 'Нове завдання: ' + j.question + ' Введіть відповідь у полі поруч.';
+                }
+            } catch (e) {
+                qEl.textContent = 'Помилка';
+                if (liveEl) liveEl.textContent = 'Не вдалося завантажити перевірку. Спробуйте «Інший приклад».';
+            }
+        }
+
+        captchaReveal.addEventListener('click', () => {
+            const on = captchaPanel.classList.toggle('is-revealed');
+            captchaReveal.setAttribute('aria-pressed', on ? 'true' : 'false');
+            captchaReveal.textContent = on ? 'Знову розмити' : 'Показати чітко';
+        });
+
+        document.getElementById('password').addEventListener('input', (e) => updatePwdMeter(e.target.value));
+        document.getElementById('captchaRefresh').addEventListener('click', () => loadCaptcha());
+        if (window.wirePasswordToggle) {
+            window.wirePasswordToggle(document.getElementById('togglePassword'), document.getElementById('password'));
+            window.wirePasswordToggle(document.getElementById('togglePassword2'), document.getElementById('password2'));
+        }
+        loadCaptcha();
+
+        document.getElementById('registerForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const errEl = document.getElementById('formError');
+            const okEl = document.getElementById('registerSuccess');
+            const btn = e.target.querySelector('button[type="submit"]');
+            errEl.style.display = 'none';
+            okEl.style.display = 'none';
+            const pw = document.getElementById('password').value;
+            const pw2 = document.getElementById('password2').value;
+            if (pw !== pw2) {
+                errEl.textContent = 'Паролі не збігаються';
+                errEl.style.display = 'block';
+                document.getElementById('password2').focus();
+                return;
+            }
+            btn.disabled = true;
+            try {
+                const data = await window.apiJson('/api/auth/register', {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        email: document.getElementById('email').value,
+                        password: pw,
+                        password_confirm: pw2,
+                        captcha_token: document.getElementById('captchaToken').value,
+                        captcha_answer: document.getElementById('captchaAnswer').value,
+                        full_name: document.getElementById('fullName').value || null,
+                    }),
+                });
+                if (data.email_verification_pending) {
+                    document.getElementById('registerForm').style.display = 'none';
+                    okEl.innerHTML = '<p><strong>' + (data.message || 'Перевірте пошту.') + '</strong></p><p>Після підтвердження ви зможете <a href="login.html">увійти</a>.</p>';
+                    okEl.style.display = 'block';
+                    return;
+                }
+                if (data.access_token) {
+                    if (window.setAuthToken) window.setAuthToken(data.access_token);
+                    else localStorage.setItem('token', data.access_token);
+                    try {
+                        const mu = await window.apiJson('/api/me');
+                        if (mu.account_kind === 'student') {
+                            window.location.href = 'student-hub.html';
+                            return;
+                        }
+                    } catch (e) { /* ignore */ }
+                    window.location.href = 'dashboard.html';
+                }
+            } catch (err) {
+                errEl.textContent = err.message || 'Помилка реєстрації';
+                errEl.style.display = 'block';
+                loadCaptcha();
+            } finally {
+                btn.disabled = false;
+            }
+        });
+    </script>
+    <script>document.querySelector('.mobile-toggle')?.addEventListener('click',()=>document.querySelector('.nav').classList.toggle('open'));</script>
+</body>
+</html>

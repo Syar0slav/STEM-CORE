@@ -1,0 +1,11 @@
+[tool.ruff]
+target-version = "py312"
+line-length = 100
+src = ["."]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP"]
+ignore = ["UP038"]
+
+[tool.coverage.run]
+omit = ["tests/*", "alembic/*"]
