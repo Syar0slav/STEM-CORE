@@ -97,3 +97,6 @@ def test_article_model_has_k_table(db, unique_student):
     art = compute_class_model_article(db, str(CLASS_ID), str(SURVEY_ID))
     assert art.get("ranking_article")
     assert len(art.get("k_table", [])) == 5
+    parts = [p for p in art["ranking_article"].split("-") if p]
+    assert len(parts) == 4
+    assert set(parts) == {"S", "T", "E", "M"}

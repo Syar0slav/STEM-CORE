@@ -171,6 +171,26 @@ def test_deputy_export_pdf_docx(client, db, seed_school_survey_class):
     assert len(r_docx.content) > 200
 
 
+def test_deputy_export_compare_same_survey_400(client, db, seed_school_survey_class):
+    from auth import get_password_hash
+
+    u = User(
+        email=f"dep_cmp_{uuid.uuid4().hex}@example.com",
+        password_hash=get_password_hash("Test1!pass"),
+        role="user",
+        staff_scope="parallel_a",
+        school_id=SCHOOL_ID,
+    )
+    db.add(u)
+    db.commit()
+    db.refresh(u)
+    r = client.get(
+        f"/api/schools/{SCHOOL_ID}/export?survey_id={SURVEY_ID}&survey_id_b={SURVEY_ID}&format=csv",
+        headers=auth_headers(u),
+    )
+    assert r.status_code == 400
+
+
 def test_network_analytics_two_schools(client, db, seed_school_survey_class, admin_user):
     sid2 = uuid.UUID("a0000000-0000-0000-0000-000000000002")
     db.add(School(id=sid2, name="School B", city="Lviv"))

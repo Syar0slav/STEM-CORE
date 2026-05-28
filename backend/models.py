@@ -43,6 +43,8 @@ class User(Base):
     role = Column(String(20), nullable=False)
     # Для role=user: parallel_a / parallel_b — завуч відповідної паралелі; school — директор
     staff_scope = Column(String(20), nullable=True)
+    # Предметна STEM-лінія вчителя (S/T/E/M), без staff_scope
+    stem_specialty = Column(String(1), nullable=True)
     school_id = Column(UUID(as_uuid=True), ForeignKey("schools.id"))
     created_at = Column(DateTime, default=datetime.utcnow)
     email_verified = Column(Boolean, nullable=False, default=True)
@@ -50,10 +52,24 @@ class User(Base):
     __table_args__ = (
         CheckConstraint("role IN ('admin', 'user')", name="users_role_check"),
         CheckConstraint(
-            "staff_scope IS NULL OR staff_scope IN ('parallel_a', 'parallel_b', 'school')",
+            "staff_scope IS NULL OR staff_scope IN "
+            "('parallel_a', 'parallel_b', 'school', 'support')",
             name="users_staff_scope_check",
         ),
+        CheckConstraint(
+            "stem_specialty IS NULL OR stem_specialty IN ('S', 'T', 'E', 'M')",
+            name="users_stem_specialty_check",
+        ),
     )
+
+
+class TeacherClassAssignment(Base):
+    """Додаткові класи предметника (класний керівник дублюється через classes.teacher_id)."""
+
+    __tablename__ = "teacher_class_assignments"
+
+    user_id = Column(UUID(as_uuid=True), ForeignKey("users.id", ondelete="CASCADE"), primary_key=True)
+    class_id = Column(UUID(as_uuid=True), ForeignKey("classes.id", ondelete="CASCADE"), primary_key=True)
 
 
 class Class(Base):
@@ -86,6 +102,7 @@ class Survey(Base):
     school_year = Column(String(20))
     started_at = Column(DateTime, default=datetime.utcnow)
     closed_at = Column(DateTime)
+    is_active = Column(Boolean, nullable=False, default=True)
 
 
 class SurveyResponse(Base):

@@ -2,7 +2,7 @@ from uuid import UUID
 from typing import Annotated, Optional
 
 from email_validator import EmailNotValidError, validate_email
-from pydantic import AfterValidator, BaseModel, Field, model_validator
+from pydantic import AfterValidator, BaseModel, Field, field_validator, model_validator
 
 
 def _email_relaxed(value: str) -> str:
@@ -137,6 +137,7 @@ class MeOut(BaseModel):
     school_id: str | None = None
     email_verified: bool = True
     staff_scope: str | None = None
+    stem_specialty: Optional[str] = None  # S / T / E / M для вчителя
     account_kind: str = "user"
     # Учень: записи (глобально), уроки за паралеллю/школою, Moodle — лише якщо клас увімкнув
     recordings_url: Optional[str] = None
@@ -166,6 +167,27 @@ class SchoolItemOut(BaseModel):
     city: str | None = None
 
 
+class DeputyDirOut(BaseModel):
+    email: str
+    full_name: str | None = None
+    parallel_label: str
+
+
+class StudentDirOut(BaseModel):
+    email: str
+    full_name: str | None = None
+
+
+class SchoolDirectoryOut(BaseModel):
+    school_id: str
+    school_name: str
+    school_city: str | None = None
+    deputy_count: int
+    deputies: list[DeputyDirOut]
+    student_count: int
+    students: list[StudentDirOut]
+
+
 class ClassItemOut(BaseModel):
     id: str
     name: str
@@ -179,6 +201,7 @@ class SurveyItemOut(BaseModel):
     id: str
     name: str
     school_year: str | None = None
+    is_active: bool = True
 
 
 class SubmitResponseOut(BaseModel):
@@ -287,6 +310,7 @@ class UserAdminOut(BaseModel):
     role: str
     school_id: Optional[str] = None
     staff_scope: Optional[str] = None
+    stem_specialty: Optional[str] = None
     created_at: Optional[str] = None
 
 
@@ -299,10 +323,52 @@ class AdminUsersListOut(BaseModel):
     offset: int
 
 
+class TeacherProfileMutateIn(BaseModel):
+    """Оновлення STEM-лінії та призначень (доступ адміна або директора школи)."""
+
+    stem_specialty: Optional[str] = None  # одна літера або None
+    assigned_class_ids: Optional[list[UUID]] = Field(
+        default=None,
+        description="Повний набір зв’язків через teacher_class_assignments (замість попереднього складу таблиці).",
+    )
+
+    @field_validator("stem_specialty", mode="before")
+    @classmethod
+    def _norm_stem(cls, v):  # noqa: ANN001
+        if v is None or (isinstance(v, str) and not v.strip()):
+            return None
+        if isinstance(v, str):
+            s = v.strip().upper()
+            if len(s) == 1 and s in {"S", "T", "E", "M"}:
+                return s
+        raise ValueError("stem_specialty must be null or one of S, T, E, M")
+
+
 class UserAdminUpdate(BaseModel):
     role: Optional[str] = None
     school_id: Optional[UUID] = None
     staff_scope: Optional[str] = None
+    stem_specialty: Optional[str] = None
+    assigned_class_ids: Optional[list[UUID]] = Field(
+        default=None,
+        description="Замінює лише записи teacher_class_assignments.",
+    )
+
+    @field_validator("stem_specialty", mode="before")
+    @classmethod
+    def _norm_admin_stem(cls, v):  # noqa: ANN001
+        if v is None or (isinstance(v, str) and not v.strip()):
+            return None
+        if isinstance(v, str):
+            s = v.strip().upper()
+            if len(s) == 1 and s in {"S", "T", "E", "M"}:
+                return s
+        raise ValueError("stem_specialty must be null or one of S, T, E, M")
+
+
+class TeacherAssignmentsOut(BaseModel):
+    stem_specialty: Optional[str] = None
+    assigned_class_ids: list[str] = Field(default_factory=list)
 
 
 class ClassStudentPair(BaseModel):

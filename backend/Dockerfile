@@ -11,8 +11,10 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY backend/ .
 COPY frontend/ ./frontend/
-# Сид демо-даних (запуск: python /seed_demo_1000.py у контейнері api, DATABASE_URL уже з docker-compose)
+COPY moodle/ ./moodle/
+# Сиди (запуск у контейнері: python /seed_….py; DATABASE_URL з docker-compose)
 COPY scripts/seed_demo_1000.py /seed_demo_1000.py
+COPY scripts/seed_zosh201_dashboard_preview.py /seed_zosh201_dashboard_preview.py
 
 ENV PYTHONPATH=/app
 

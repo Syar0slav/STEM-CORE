@@ -16,12 +16,23 @@ depends_on: Union[str, Sequence[str], None] = None
 
 
 def upgrade() -> None:
-    op.create_unique_constraint(
-        "uq_classes_school_id_name",
-        "classes",
-        ["school_id", "name"],
+    # 001_initial уже створює це з моделі Class (UniqueConstraint з тим самим ім’ям).
+    op.execute(
+        """
+        DO $$
+        BEGIN
+            IF NOT EXISTS (
+                SELECT 1 FROM pg_constraint WHERE conname = 'uq_classes_school_id_name'
+            ) THEN
+                ALTER TABLE classes
+                ADD CONSTRAINT uq_classes_school_id_name UNIQUE (school_id, name);
+            END IF;
+        END $$;
+        """
     )
 
 
 def downgrade() -> None:
-    op.drop_constraint("uq_classes_school_id_name", "classes", type_="unique")
+    op.execute(
+        "ALTER TABLE classes DROP CONSTRAINT IF EXISTS uq_classes_school_id_name"
+    )

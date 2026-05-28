@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session
 
 from config import settings
 from database import get_db
-from models import Class, User, LoginAttempt
+from models import User, LoginAttempt
 from password_hashing import hash_password as get_password_hash
 from password_hashing import verify_password
 
@@ -80,7 +80,9 @@ def require_class_model_viewer():
             raise HTTPException(status_code=403, detail="Insufficient permissions")
         if user.staff_scope is not None:
             return user
-        if db.query(Class).filter(Class.teacher_id == user.id).first():
+        from user_roles import is_teacher
+
+        if is_teacher(db, user):
             return user
         raise HTTPException(status_code=403, detail="Insufficient permissions")
 

@@ -10,14 +10,16 @@ from sqlalchemy.orm import Session
 from datetime import datetime, timedelta
 
 from database import get_db
-from models import User, School, Class, ClassStudent, Survey, SurveyResponse, SurveyAnswer, ClassModel, LoginAttempt
+from models import User, School, Class, ClassStudent, Survey, SurveyResponse, SurveyAnswer, ClassModel, LoginAttempt, TeacherClassAssignment
 from user_roles import (
     account_kind,
     assert_user_may_access_class,
+    can_export_school_reports,
     filter_classes_by_staff_scope,
     can_view_school_insights,
     is_student,
     is_teacher,
+    teacher_linked_class_ids,
 )
 from student_portal import (
     compute_student_portal_urls,
@@ -55,6 +57,9 @@ from schemas import (
     MyRecommendationsOut,
     OkOut,
     SchoolItemOut,
+    SchoolDirectoryOut,
+    DeputyDirOut,
+    StudentDirOut,
     ClassItemOut,
     SurveyItemOut,
     SubmitResponseOut,
@@ -76,6 +81,8 @@ from schemas import (
     UserAdminOut,
     AdminUsersListOut,
     UserAdminUpdate,
+    TeacherProfileMutateIn,
+    TeacherAssignmentsOut,
     BulkClassStudentsIn,
     BulkClassStudentsOut,
     ClassStudentPair,
@@ -89,6 +96,41 @@ from limiter_setup import limiter
 from logging_config import account_suffix, email_fingerprint, log_auth_event
 
 router = APIRouter()
+
+
+def _reject_support_data_mutation(user: User) -> None:
+    if user.role == "user" and user.staff_scope == "support":
+        raise HTTPException(status_code=403, detail="Insufficient permissions")
+
+
+def _assert_teacher_profile_target(db: Session, target: User) -> None:
+    if target.role != "user":
+        raise HTTPException(
+            status_code=400,
+            detail="STEM-призначення застосовуються лише до облікових записів role=user без staff_scope",
+        )
+    if target.staff_scope:
+        raise HTTPException(
+            status_code=400,
+            detail="Для записів із staff_scope (директор, завуч) використовуйте налаштування доступу школи",
+        )
+
+
+def _replace_teacher_assignments(db: Session, target: User, class_ids: list[UUID]) -> None:
+    _assert_teacher_profile_target(db, target)
+    if target.school_id is None:
+        raise HTTPException(status_code=400, detail="Користувач має мати school_id для привʼязки до класів")
+    sch = target.school_id
+    db.query(TeacherClassAssignment).filter(TeacherClassAssignment.user_id == target.id).delete(
+        synchronize_session=False
+    )
+    for cid in class_ids:
+        c = db.query(Class).filter(Class.id == cid).first()
+        if not c:
+            raise HTTPException(status_code=400, detail="Class not found")
+        if c.school_id != sch:
+            raise HTTPException(status_code=400, detail="Class belongs to another school")
+        db.add(TeacherClassAssignment(user_id=target.id, class_id=cid))
 
 
 def _class_to_out(c: Class) -> ClassItemOut:
@@ -238,11 +280,13 @@ def resend_verification(request: Request, data: ResendVerificationIn, db: Sessio
 def register_staff(request: Request, data: StaffRegister, db: Session = Depends(get_db)):
     if not settings.staff_invite_secret or data.invite_secret != settings.staff_invite_secret:
         raise HTTPException(status_code=403, detail="Invalid or missing invite")
-    if data.role not in ("teacher", "deputy", "director"):
+    if data.role not in ("teacher", "deputy", "director", "support"):
         raise HTTPException(status_code=400, detail="Invalid role for staff registration")
     staff_scope = None
     if data.role == "director":
         staff_scope = "school"
+    elif data.role == "support":
+        staff_scope = "support"
     elif data.role == "deputy":
         p = (data.deputy_parallel or "").strip().upper()
         if p in ("A", "А"):
@@ -254,6 +298,8 @@ def register_staff(request: Request, data: StaffRegister, db: Session = Depends(
                 status_code=400,
                 detail="Для завуча вкажіть паралель: A або B (поле deputy_parallel)",
             )
+    if data.role in ("director", "support") and not data.school_id:
+        raise HTTPException(status_code=400, detail="School ID required for director or support")
     if db.query(User).filter(User.email == data.email).first():
         raise HTTPException(status_code=400, detail="Email already registered")
     user = User(
@@ -349,6 +395,7 @@ def me(user: User = Depends(get_current_user), db: Session = Depends(get_db)):
             school_id=str(user.school_id) if user.school_id else None,
             email_verified=bool(user.email_verified),
             staff_scope=user.staff_scope,
+            stem_specialty=None,
             account_kind=ak,
             recordings_url=px.get("recordings_url"),
             moodle_url=px.get("moodle_url"),
@@ -363,12 +410,25 @@ def me(user: User = Depends(get_current_user), db: Session = Depends(get_db)):
         school_id=str(user.school_id) if user.school_id else None,
         email_verified=bool(user.email_verified),
         staff_scope=user.staff_scope,
+        stem_specialty=user.stem_specialty or None,
         account_kind=ak,
         recordings_url=None,
         moodle_url=None,
         moodle_visible=None,
         lessons_url_parallel=None,
         lessons_url_school=None,
+    )
+
+
+@router.get("/me/teacher-profile", response_model=TeacherAssignmentsOut, tags=["Users"])
+def me_teacher_profile(user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    """Підсумок STEM-лінії та класів учителя (об’єднання класного + предметних привʼязок)."""
+    if not is_teacher(db, user):
+        raise HTTPException(status_code=403, detail="Teacher profile available only for teaching accounts")
+    ids = sorted(teacher_linked_class_ids(db, user), key=str)
+    return TeacherAssignmentsOut(
+        stem_specialty=user.stem_specialty,
+        assigned_class_ids=[str(x) for x in ids],
     )
 
 
@@ -426,6 +486,71 @@ def list_schools(
     return []
 
 
+@router.get("/schools/{school_id}/directory", response_model=SchoolDirectoryOut, tags=["Directories"])
+def school_directory(
+    school_id: str,
+    user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """Довідник закладу для директора: завучі паралелей та учні (за класами школи). Admin — також."""
+    sid = UUID(school_id)
+    if user.role != "admin":
+        if not (
+            user.role == "user"
+            and user.staff_scope == "school"
+            and user.school_id == sid
+        ):
+            raise HTTPException(status_code=403, detail="Insufficient permissions")
+    school = db.query(School).filter(School.id == sid).first()
+    if not school:
+        raise HTTPException(status_code=404, detail="School not found")
+
+    deps = (
+        db.query(User)
+        .filter(
+            User.school_id == sid,
+            User.staff_scope.in_(("parallel_a", "parallel_b")),
+        )
+        .order_by(User.staff_scope, User.full_name, User.email)
+        .all()
+    )
+    deputy_rows: list[DeputyDirOut] = []
+    for u in deps:
+        lbl = "Паралель А" if u.staff_scope == "parallel_a" else "Паралель Б"
+        deputy_rows.append(
+            DeputyDirOut(email=u.email, full_name=u.full_name, parallel_label=lbl)
+        )
+
+    st_ids = [
+        r[0]
+        for r in db.query(ClassStudent.student_id)
+        .join(Class, ClassStudent.class_id == Class.id)
+        .filter(Class.school_id == sid)
+        .distinct()
+        .all()
+    ]
+    if st_ids:
+        students_q = (
+            db.query(User)
+            .filter(User.id.in_(st_ids))
+            .order_by(User.full_name, User.email)
+            .all()
+        )
+    else:
+        students_q = []
+    st_out = [StudentDirOut(email=u.email, full_name=u.full_name) for u in students_q]
+
+    return SchoolDirectoryOut(
+        school_id=str(school.id),
+        school_name=school.name,
+        school_city=school.city,
+        deputy_count=len(deputy_rows),
+        deputies=deputy_rows,
+        student_count=len(st_out),
+        students=st_out,
+    )
+
+
 @router.get("/classes", response_model=list[ClassItemOut], tags=["Directories"])
 def list_classes(
     user: User = Depends(get_current_user),
@@ -453,7 +578,11 @@ def list_classes(
         rows = filter_classes_by_staff_scope(rows, user)
         return [_class_to_out(c) for c in rows]
     elif is_teacher(db, user) and user.id:
-        q = q.filter(Class.teacher_id == user.id)
+        tids = teacher_linked_class_ids(db, user)
+        if not tids:
+            return []
+        rows = db.query(Class).filter(Class.id.in_(tids)).all()
+        return [_class_to_out(c) for c in rows]
     elif school_id:
         q = q.filter(Class.school_id == UUID(school_id))
     rows = q.all()
@@ -513,6 +642,7 @@ def patch_class_survey_flags(
     user: User = Depends(require_school_insights_user()),
     db: Session = Depends(get_db),
 ):
+    _reject_support_data_mutation(user)
     cid = UUID(class_id)
     c = assert_user_may_access_class(db, user, cid)
     raw = data.model_dump(exclude_unset=True)
@@ -539,6 +669,7 @@ def post_school_roster(
     user: User = Depends(require_school_insights_user()),
     db: Session = Depends(get_db),
 ):
+    _reject_support_data_mutation(user)
     sid = UUID(school_id)
     _assert_portal_school(user, sid)
     linked = 0
@@ -586,7 +717,12 @@ def list_surveys(
 ):
     rows = db.query(Survey).all()
     return [
-        SurveyItemOut(id=str(s.id), name=s.name, school_year=s.school_year)
+        SurveyItemOut(
+            id=str(s.id),
+            name=s.name,
+            school_year=s.school_year,
+            is_active=bool(getattr(s, "is_active", True)),
+        )
         for s in rows
     ]
 
@@ -602,6 +738,8 @@ def submit_response(
     survey = db.query(Survey).filter(Survey.id == data.survey_id).first()
     if not survey:
         raise HTTPException(status_code=404, detail="Survey not found")
+    if not getattr(survey, "is_active", True):
+        raise HTTPException(status_code=403, detail="Survey is not active")
     existing = db.query(SurveyResponse).filter(
         SurveyResponse.survey_id == data.survey_id,
         SurveyResponse.student_id == user.id
@@ -739,13 +877,7 @@ def _parse_bulk_csv(body: bytes) -> list[ClassStudentPair]:
 
 
 def _is_bulk_student_account(db: Session, u: User) -> bool:
-    if u.role != "user":
-        return False
-    if u.staff_scope:
-        return False
-    if db.query(Class).filter(Class.teacher_id == u.id).first():
-        return False
-    return True
+    return is_student(db, u)
 
 
 def _apply_bulk_class_students(db: Session, pairs: list[ClassStudentPair]) -> int:
@@ -872,6 +1004,7 @@ def admin_list_users(
                 role=u.role,
                 school_id=str(u.school_id) if u.school_id else None,
                 staff_scope=u.staff_scope,
+                stem_specialty=u.stem_specialty,
                 created_at=u.created_at.isoformat() if u.created_at else None,
             )
             for u in rows
@@ -895,7 +1028,9 @@ def admin_export_users_csv(
     rows = q.limit(10_000).all()
     buf = io.StringIO()
     w = csv.writer(buf)
-    w.writerow(["id", "email", "full_name", "role", "school_id", "staff_scope", "created_at"])
+    w.writerow(
+        ["id", "email", "full_name", "role", "school_id", "staff_scope", "stem_specialty", "created_at"]
+    )
     for u in rows:
         w.writerow(
             [
@@ -905,6 +1040,7 @@ def admin_export_users_csv(
                 u.role,
                 str(u.school_id) if u.school_id else "",
                 u.staff_scope or "",
+                u.stem_specialty or "",
                 u.created_at.isoformat() if u.created_at else "",
             ]
         )
@@ -948,6 +1084,10 @@ def admin_update_user(
             if not sch:
                 raise HTTPException(status_code=400, detail="School not found")
             u.school_id = sid
+    if "stem_specialty" in patch:
+        u.stem_specialty = patch["stem_specialty"]
+    if "assigned_class_ids" in patch:
+        _replace_teacher_assignments(db, u, patch["assigned_class_ids"])
     db.commit()
     db.refresh(u)
     return UserAdminOut(
@@ -957,6 +1097,7 @@ def admin_update_user(
         role=u.role,
         school_id=str(u.school_id) if u.school_id else None,
         staff_scope=u.staff_scope,
+        stem_specialty=u.stem_specialty,
         created_at=u.created_at.isoformat() if u.created_at else None,
     )
 
@@ -983,6 +1124,49 @@ async def admin_bulk_class_students_csv(
     inserted = _apply_bulk_class_students(db, pairs)
     db.commit()
     return BulkClassStudentsOut(inserted=inserted)
+
+
+@router.patch(
+    "/schools/{school_id}/users/{user_id}/teacher-profile",
+    response_model=TeacherAssignmentsOut,
+    tags=["School staff"],
+)
+def school_patch_teacher_profile(
+    school_id: str,
+    user_id: str,
+    data: TeacherProfileMutateIn,
+    user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """Директор школи (або admin) задає STEM-лінію та предметні привʼязки класів для вчителя."""
+    _reject_support_data_mutation(user)
+    sid_u = UUID(school_id)
+    uid = UUID(user_id)
+    if user.role == "admin":
+        pass
+    elif user.role == "user" and user.staff_scope == "school" and user.school_id == sid_u:
+        pass
+    else:
+        raise HTTPException(status_code=403, detail="Insufficient permissions")
+    tgt = db.query(User).filter(User.id == uid).first()
+    if not tgt:
+        raise HTTPException(status_code=404, detail="User not found")
+    if tgt.school_id != sid_u:
+        raise HTTPException(status_code=400, detail="User is not assigned to this school")
+    patch = data.model_dump(exclude_unset=True)
+    if not patch:
+        raise HTTPException(status_code=400, detail="No fields to update")
+    if "stem_specialty" in patch:
+        tgt.stem_specialty = patch["stem_specialty"]
+    if "assigned_class_ids" in patch:
+        _replace_teacher_assignments(db, tgt, patch["assigned_class_ids"])
+    db.commit()
+    db.refresh(tgt)
+    tids = sorted(teacher_linked_class_ids(db, tgt), key=str)
+    return TeacherAssignmentsOut(
+        stem_specialty=tgt.stem_specialty,
+        assigned_class_ids=[str(x) for x in tids],
+    )
 
 
 @router.get("/schools/{school_id}/analytics", response_model=SchoolAnalyticsOut, tags=["School analytics"])
@@ -1023,22 +1207,49 @@ def get_school_compare(
 def export_school(
     school_id: str,
     survey_id: str,
+    survey_id_b: str | None = Query(
+        None,
+        description="Друге опитування: якщо вказано разом із survey_id, експорт містить обидва півріччя",
+    ),
     format: str = "csv",
     user: User = Depends(require_school_insights_user()),
     db: Session = Depends(get_db),
 ):
+    if not can_export_school_reports(user):
+        raise HTTPException(status_code=403, detail="Insufficient permissions")
     from export_report import (
         export_school_survey_csv,
+        export_school_survey_csv_compare,
         export_school_survey_docx,
+        export_school_survey_docx_compare,
         export_school_survey_pdf,
+        export_school_survey_pdf_compare,
         export_school_survey_xlsx,
+        export_school_survey_xlsx_compare,
     )
 
     fmt = (format or "csv").lower().strip()
-    safe_name = f"school-{school_id}-{survey_id}"
+    id_a = survey_id.strip()
+    id_b = (survey_id_b or "").strip()
+    compare = bool(id_b)
+
+    if compare and id_b == id_a:
+        raise HTTPException(
+            status_code=400,
+            detail="Для порівняльного експорту потрібні два різні опитування.",
+        )
+
+    if compare:
+        safe_name = f"school-{school_id}-compare-{id_a[:8]}-{id_b[:8]}"
+    else:
+        safe_name = f"school-{school_id}-{survey_id}"
 
     if fmt == "xlsx":
-        body = export_school_survey_xlsx(db, user, school_id, survey_id)
+        body = (
+            export_school_survey_xlsx_compare(db, user, school_id, id_a, id_b)
+            if compare
+            else export_school_survey_xlsx(db, user, school_id, id_a)
+        )
         if not body:
             raise HTTPException(status_code=403, detail="No data")
         return Response(
@@ -1047,7 +1258,11 @@ def export_school(
             headers={"Content-Disposition": f'attachment; filename="{safe_name}.xlsx"'},
         )
     if fmt == "pdf":
-        body = export_school_survey_pdf(db, user, school_id, survey_id)
+        body = (
+            export_school_survey_pdf_compare(db, user, school_id, id_a, id_b)
+            if compare
+            else export_school_survey_pdf(db, user, school_id, id_a)
+        )
         if not body:
             raise HTTPException(status_code=403, detail="No data")
         return Response(
@@ -1056,7 +1271,11 @@ def export_school(
             headers={"Content-Disposition": f'attachment; filename="{safe_name}.pdf"'},
         )
     if fmt in ("docx", "word", "docs"):
-        body = export_school_survey_docx(db, user, school_id, survey_id)
+        body = (
+            export_school_survey_docx_compare(db, user, school_id, id_a, id_b)
+            if compare
+            else export_school_survey_docx(db, user, school_id, id_a)
+        )
         if not body:
             raise HTTPException(status_code=403, detail="No data")
         return Response(
@@ -1069,7 +1288,11 @@ def export_school(
             status_code=400,
             detail="Unsupported format. Use: csv, xlsx, pdf, docx.",
         )
-    body = export_school_survey_csv(db, user, school_id, survey_id)
+    body = (
+        export_school_survey_csv_compare(db, user, school_id, id_a, id_b)
+        if compare
+        else export_school_survey_csv(db, user, school_id, id_a)
+    )
     if not body:
         raise HTTPException(status_code=403, detail="No data")
     return Response(

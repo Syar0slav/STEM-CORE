@@ -27,7 +27,7 @@ from middleware import (
 from limiter_setup import limiter
 
 app = FastAPI(
-    title="STEM Diagnostic Tool",
+    title="STEM. Цифровий діагностичний інструмент API",
     openapi_tags=[
         {"name": "Authentication", "description": "Реєстрація, вхід, пароль"},
         {"name": "Users", "description": "Профіль і персональні дані"},
@@ -109,7 +109,7 @@ def root():
     index_file = frontend_path / "index.html"
     if index_file.exists():
         return FileResponse(index_file)
-    return {"name": "STEM Diagnostic Tool", "version": "1.0"}
+    return {"name": "STEM. Цифровий діагностичний інструмент", "version": "1.0"}
 
 
 @app.get("/health")
@@ -141,7 +141,7 @@ def health_ready(db: Session = Depends(get_db)):
                     "status": "error",
                     "database": "schema_incomplete",
                     "missing_user_columns": missing,
-                    "hint": "Run: alembic upgrade head (inside api container)",
+                    "hint": "Сервіс потребує оновлення налаштувань. Зверніться до адміністратора.",
                 },
             )
     except Exception as e:
