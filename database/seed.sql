@@ -1,9 +1,10 @@
 INSERT INTO schools (id, name, city) VALUES
-    ('a0000000-0000-0000-0000-000000000001', 'ЗОШ №201', 'Київ')
+    ('a0000000-0000-0000-0000-000000000001', 'ЗЗСО №201', 'Київ')
 ON CONFLICT (id) DO NOTHING;
 
 INSERT INTO surveys (id, name, school_year) VALUES
-    ('b0000000-0000-0000-0000-000000000001', 'STEM Semantics Survey 2024-2025', '2024-2025')
+    ('b0000000-0000-0000-0000-000000000001', 'STEM Semantics Survey 2024-2025', '2024-2025'),
+    ('b0000000-0000-0000-0000-000000000002', 'STEM Semantics Survey 2025-2026 (ІІ півріччя)', '2025-2026')
 ON CONFLICT (id) DO NOTHING;
 
 INSERT INTO classes (id, school_id, name, grade) VALUES

@@ -16,7 +16,8 @@ CREATE TABLE users (
     password_hash VARCHAR(255) NOT NULL,
     full_name VARCHAR(255),
     role VARCHAR(20) NOT NULL CHECK (role IN ('admin', 'user')),
-    staff_scope VARCHAR(20) CHECK (staff_scope IS NULL OR staff_scope IN ('parallel_a', 'parallel_b', 'school')),
+    staff_scope VARCHAR(20) CHECK (staff_scope IS NULL OR staff_scope IN ('parallel_a', 'parallel_b', 'school', 'support')),
+    stem_specialty VARCHAR(1) CHECK (stem_specialty IS NULL OR stem_specialty IN ('S', 'T', 'E', 'M')),
     school_id UUID REFERENCES schools(id),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     email_verified BOOLEAN NOT NULL DEFAULT TRUE,
@@ -35,6 +36,12 @@ CREATE TABLE classes (
     UNIQUE(school_id, name)
 );
 
+CREATE TABLE teacher_class_assignments (
+    user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    class_id UUID NOT NULL REFERENCES classes(id) ON DELETE CASCADE,
+    PRIMARY KEY (user_id, class_id)
+);
+
 CREATE TABLE class_students (
     class_id UUID REFERENCES classes(id),
     student_id UUID REFERENCES users(id),
@@ -46,7 +53,8 @@ CREATE TABLE surveys (
     name VARCHAR(255) NOT NULL,
     school_year VARCHAR(20),
     started_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    closed_at TIMESTAMP
+    closed_at TIMESTAMP,
+    is_active BOOLEAN NOT NULL DEFAULT TRUE
 );
 
 CREATE TABLE survey_responses (
