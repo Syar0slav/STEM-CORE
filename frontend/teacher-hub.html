@@ -1,0 +1,792 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Кабінет вчителя — STEM Diagnostic</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+</head>
+<body>
+    <header class="header">
+        <div class="header-top">
+            <div class="container header-inner">
+                <a href="index.html" class="logo" aria-label="STEM Diagnostic"><span class="logo-stem-letters" aria-hidden="true"><span class="logo-sl logo-sl--s">S</span><span class="logo-sl logo-sl--t">T</span><span class="logo-sl logo-sl--e">E</span><span class="logo-sl logo-sl--m">M</span></span><span class="logo-tail">Diagnostic</span></a>
+                <nav class="nav">
+                    <a href="dashboard.html">Повна панель</a>
+                    <a href="account.html">Акаунт</a>
+                    <a href="#" id="logoutBtn" class="btn btn-ghost">Вийти</a>
+                </nav>
+                <button type="button" class="mobile-toggle" aria-label="Меню">☰</button>
+            </div>
+        </div>
+    </header>
+    <main class="container teacher-hub-main">
+        <h1 class="page-title">Кабінет вчителя</h1>
+        <p class="teacher-hub-lead" id="teacherLead"></p>
+
+        <div class="card teacher-hub-stem-card" id="stemFocusCard">
+            <h2 class="teacher-hub-h2">Ваша STEM-лінія та класи</h2>
+            <p id="stemFocusLine" class="teacher-hub-body"></p>
+            <p id="stemFocusHint" class="account-muted teacher-hub-muted"></p>
+        </div>
+
+        <div class="card teacher-hub-classes-card">
+            <h2 class="teacher-hub-h2">Приписані класи</h2>
+            <p class="teacher-hub-intro account-muted">Нижче — класи, до яких вас підключено в системі школи (класне керівництво та/або предметні групи).</p>
+            <div class="teacher-hub-survey-toolbar">
+                <label for="teacherSurveySel">Опитування</label>
+                <select id="teacherSurveySel" aria-describedby="teacherSurveyHint"></select>
+                <p id="teacherSurveyHint" class="teacher-hub-survey-hint">
+                    Графіки й текстові висновки рахуються за обраною хвилею опитування.
+                </p>
+            </div>
+
+            <div class="teacher-hub-charts-wrap" id="teacherChartsWrap" aria-labelledby="teacherChartsHeading">
+                <h3 id="teacherChartsHeading" class="teacher-hub-charts-h3">Графіки по ваших класах</h3>
+                <p id="teacherChartStatus" class="teacher-hub-chart-status" aria-live="polite"></p>
+
+                <fieldset class="teacher-hub-chart-fieldset">
+                    <legend>Класи</legend>
+                    <div id="teacherClassIncludeList" class="teacher-hub-class-check-grid"></div>
+                </fieldset>
+
+                <div class="teacher-hub-chart-split">
+                    <fieldset class="teacher-hub-chart-fieldset teacher-hub-chart-fieldset--grow">
+                        <legend>Середній бал по вашій лінії</legend>
+                        <div class="teacher-hub-chart-canvas-bar">
+                            <canvas id="teacherStemBarCanvas" aria-label="Середній бал по класах"></canvas>
+                        </div>
+                    </fieldset>
+
+                    <fieldset class="teacher-hub-chart-fieldset teacher-hub-chart-fieldset--donut">
+                        <legend>Розподіл за порогом 6 балів</legend>
+                        <div class="teacher-hub-donut-toggles">
+                            <label class="teacher-hub-donut-toggle">
+                                <input type="checkbox" id="teacherDonutSalad" checked />
+                                Класи з зацікавленням
+                            </label>
+                            <label class="teacher-hub-donut-toggle">
+                                <input type="checkbox" id="teacherDonutBlue" checked />
+                                Класи з необхідним доопрацюванням
+                            </label>
+                        </div>
+                        <div class="teacher-hub-chart-canvas-donut">
+                            <canvas id="teacherDonutCanvas" aria-label="Розподіл класів за балом"></canvas>
+                        </div>
+                        <p id="teacherDonutCaption" class="teacher-hub-chart-caption"></p>
+                    </fieldset>
+                </div>
+            </div>
+
+            <div class="teacher-hub-materials-section" id="teacherMaterialsSection" aria-labelledby="teacherMaterialsHeading">
+                <h3 id="teacherMaterialsHeading" class="teacher-hub-charts-h3 teacher-hub-materials-title">
+                    Розбір матеріалів під індивідуальну програму
+                </h3>
+                <p class="teacher-hub-materials-lead">
+                    Тут зібрано ті ж практичні підказки, що й у вікні «Висновок і наслідки», але таблиця по кожному класу зручна для роботи над індивідуальною програмою. Список класів повторює ваші галочки в блоці «Класи».
+                </p>
+                <p id="teacherMaterialsStatus" class="teacher-hub-materials-status" aria-live="polite"></p>
+                <div id="teacherMaterialsGrid" class="teacher-hub-materials-grid"></div>
+            </div>
+
+            <div id="classCards" class="teacher-hub-class-grid" aria-live="polite"></div>
+            <p id="classCardsEmpty" class="account-muted" hidden>Немає прив’язаних класів. Зверніться до директора школи.</p>
+        </div>
+
+        <div class="card">
+            <h2 class="teacher-hub-h2">Як працюють дані моделі класу</h2>
+                <p class="teacher-hub-body">
+                За відповідями учнів у опитуванні будується <strong>модель класу</strong> за доменами STEM та ранжуванням.
+                Це не «оцінка вчителя», а сигнал, де клас зараз найбільш залучений до тем STEM — його можна використати для методичних кроків.
+            </p>
+            <p class="teacher-hub-body"><a href="index.html#method" class="btn btn-outline">Читати про методику на головній</a>
+                <a href="dashboard.html" class="btn btn-accent" style="margin-left:0.5rem">Відкрити панель (модель, рекомендації)</a></p>
+        </div>
+    </main>
+
+    <dialog id="teacherRecDialog" class="teacher-rec-dialog" aria-labelledby="teacherRecDialogTitle">
+        <div class="teacher-rec-dialog-inner">
+            <button type="button" class="teacher-rec-dialog-close btn btn-ghost" aria-label="Закрити" id="teacherRecClose">&times;</button>
+            <h2 id="teacherRecDialogTitle" class="teacher-rec-dialog-title"></h2>
+            <p id="teacherRecSurveyLabel" class="teacher-rec-muted"></p>
+            <div id="teacherRecLoading" class="teacher-rec-loading">Завантаження…</div>
+            <div id="teacherRecError" class="teacher-rec-error" hidden></div>
+            <div id="teacherRecBody" hidden>
+                <section class="teacher-rec-section" aria-labelledby="teacherRecHConclusion">
+                    <h3 id="teacherRecHConclusion" class="teacher-rec-h3">Висновок</h3>
+                    <div id="teacherRecConclusion" class="teacher-rec-section-body"></div>
+                </section>
+                <section class="teacher-rec-section" aria-labelledby="teacherRecHActions">
+                    <h3 id="teacherRecHActions" class="teacher-rec-h3">Наслідки дії</h3>
+                    <div id="teacherRecActions" class="teacher-rec-section-body"></div>
+                </section>
+                <div class="teacher-rec-footer-actions">
+                    <button type="button" class="btn btn-outline" id="teacherRecOpenDashboard">Відкрити повну панель з графіками</button>
+                </div>
+            </div>
+        </div>
+    </dialog>
+
+    <script src="app.js"></script>
+    <script src="teacher-hub-charts.js"></script>
+    <script>
+        document.querySelector('.mobile-toggle')?.addEventListener('click', function () {
+            document.querySelector('.header .nav').classList.toggle('open');
+        });
+
+        var STEM_FOCUS_UK = {
+            S: {
+                title: 'Наука',
+                hint: 'Підсильте експеримент, спостереження та зв’язок «явище → пояснення». Дані опитування підкажуть, чи варто акцент на природничих кейсах у STEM-проєктах.',
+            },
+            T: {
+                title: 'Технології',
+                hint: 'Зверніть увагу на цифрові інструменти, робототехніку та практичне впровадження ідей. Результати опитування покажуть ставлення до технологічного компонента STEM.',
+            },
+            E: {
+                title: 'Інженерія',
+                hint: 'Проєктування, пробні цикли, конструювання розв’язків допомагають перенести тему з теорії в зробити-спробуй-покращ. Використовуйте діаграмку класу як стартові теми розмов.',
+            },
+            M: {
+                title: 'Математика (M)',
+                hint: 'Мислення патерни, моделювання, дані й логіка. Якщо лінія M у профілі високо — використовуйте це як опорну точку між дисциплінами; якщо нижче — шукайте інтерпретації через приклади з життя.',
+            },
+        };
+
+        function esc(s) {
+            var d = document.createElement('div');
+            d.textContent = s == null ? '' : String(s);
+            return d.innerHTML;
+        }
+
+        function openDashboardForClass(cid) {
+            try {
+                sessionStorage.setItem('stem_preset_class_id', cid);
+            } catch (e) {}
+            window.location.href = 'dashboard.html';
+        }
+
+        var base = window.API_BASE || '';
+        var token = window.getToken ? window.getToken() : localStorage.getItem('token');
+        if (!token) window.location.href = 'login.html';
+
+        document.getElementById('logoutBtn').addEventListener('click', function (e) {
+            e.preventDefault();
+            if (window.clearAuthToken) window.clearAuthToken();
+            else localStorage.removeItem('token');
+            window.location.href = 'index.html';
+        });
+
+        var headers = { Authorization: 'Bearer ' + token };
+
+        var teacherStemSpecialty = '';
+        var teacherClassesCache = [];
+        var teacherChartCtl = null;
+        var teacherMaterialsByClassId = {};
+        var teacherSurveyChangeBound = false;
+
+        function loadTeacherModelsForCharts() {
+            if (!teacherChartCtl || typeof StemTeacherChartsAPI === 'undefined') return;
+            var sid = getSelectedSurveyId();
+            if (!sid || !teacherClassesCache.length) {
+                teacherChartCtl.setModels({});
+                teacherMaterialsByClassId = {};
+                teacherChartCtl.setStatus(!sid ? 'Оберіть опитування — тоді підтягнуться середні по класах.' : '');
+                loadTeacherRecommendationMaterials();
+                return;
+            }
+            teacherChartCtl.setStatus('Оновлення графіків…');
+            Promise.all(
+                teacherClassesCache.map(function (c) {
+                    return fetch(
+                        base +
+                            '/api/class-models/' +
+                            encodeURIComponent(c.id) +
+                            '/' +
+                            encodeURIComponent(sid),
+                        { headers: headers }
+                    ).then(function (r) {
+                        return r.ok ? r.json() : {};
+                    });
+                })
+            )
+                .then(function (rows) {
+                    var map = {};
+                    teacherClassesCache.forEach(function (c, i) {
+                        map[c.id] = rows[i] || {};
+                    });
+                    teacherChartCtl.setModels(map);
+                    teacherChartCtl.setStatus('');
+                    loadTeacherRecommendationMaterials();
+                })
+                .catch(function () {
+                    teacherChartCtl.setStatus('Не вдалося оновити графіки. Спробуйте ще раз.');
+                    teacherMaterialsByClassId = {};
+                    loadTeacherRecommendationMaterials();
+                });
+        }
+
+        function bindTeacherSurveyForCharts() {
+            if (teacherSurveyChangeBound) return;
+            var sel = document.getElementById('teacherSurveySel');
+            if (!sel) return;
+            sel.addEventListener('change', loadTeacherModelsForCharts);
+            teacherSurveyChangeBound = true;
+        }
+
+        var teacherRecDialogClassId = null;
+        var surveysCache = [];
+
+        function stemDiscUk(code) {
+            var map = { S: 'Наука', T: 'Технології', E: 'Інженерія', M: 'Математика (M)' };
+            return map[String(code || '').toUpperCase()] || code || '';
+        }
+
+        function stemDiscUkFull(code) {
+            return stemDiscUk(code);
+        }
+
+        function recommendationBundleToMaterialsHtml(bundle) {
+            var recs = bundle && bundle.recommendations ? bundle.recommendations : [];
+            if (!recs.length) {
+                return (
+                    '<p class="teacher-hub-chart-quiet account-muted">' +
+                    esc(
+                        'Щоб побачити узгоджені кроки, потрібна повніша модель класу за цим опитуванням — вона сформується після набору відповідей, або спробуйте іншу хвилю.'
+                    ) +
+                    '</p>'
+                );
+            }
+            var html = '';
+            recs.forEach(function (rec) {
+                html += '<section class="teacher-hub-material-block">';
+                html +=
+                    '<h5 class="teacher-hub-material-h5">' +
+                    esc(rec.title || stemDiscUk(rec.discipline)) +
+                    '</h5>';
+                if (rec.hints && rec.hints.length) {
+                    html += '<ul class="teacher-hub-material-ul">';
+                    rec.hints.forEach(function (h) {
+                        html += '<li>' + esc(h) + '</li>';
+                    });
+                    html += '</ul>';
+                }
+                if (rec.course_note) {
+                    html += '<p class="teacher-hub-material-note">' + esc(rec.course_note) + '</p>';
+                }
+                var bits = [];
+                if (rec.video_url) {
+                    bits.push(
+                        '<a href="' +
+                            esc(rec.video_url) +
+                            '" target="_blank" rel="noopener noreferrer">' +
+                            esc(rec.video_title || 'Матеріал для перегляду') +
+                            '</a>'
+                    );
+                }
+                if (rec.course_url) {
+                    bits.push(
+                        '<a href="' +
+                            esc(rec.course_url) +
+                            '" target="_blank" rel="noopener noreferrer">' +
+                            esc(rec.course_title || 'Додатковий ресурс') +
+                            '</a>'
+                    );
+                }
+                if (bits.length) {
+                    html += '<p class="teacher-hub-material-links">' + bits.join(' · ') + '</p>';
+                }
+                html += '</section>';
+            });
+            return html;
+        }
+
+        function formatAvg(v) {
+            if (v == null || v === '') return null;
+            var n = Number(v);
+            if (Number.isNaN(n)) return null;
+            return n.toFixed(2);
+        }
+
+        function hasModelSignal(model) {
+            if (!model) return false;
+            return !!(
+                model.ranking ||
+                formatAvg(model.s_avg) ||
+                formatAvg(model.t_avg) ||
+                formatAvg(model.e_avg) ||
+                formatAvg(model.m_avg)
+            );
+        }
+
+        function buildConclusionHtml(model, classLabel) {
+            var parts = (model.ranking || '').split('-').filter(Boolean);
+            var html = '';
+
+            if (!hasModelSignal(model)) {
+                html +=
+                    '<p>Для класу «' +
+                    esc(classLabel) +
+                    '» за цим опитуванням ще немає зведеної моделі. Після проходження опитування класом тут з’явиться текстовий висновок.</p>';
+                return html;
+            }
+
+            html +=
+                '<p>За обраною хвилею опитування для класу «' +
+                esc(classLabel) +
+                '» доступні такі узагальнені показники моделі класу:</p>';
+
+            var av = [];
+            if (formatAvg(model.s_avg)) av.push('Наука — ' + formatAvg(model.s_avg));
+            if (formatAvg(model.t_avg)) av.push('Технології — ' + formatAvg(model.t_avg));
+            if (formatAvg(model.e_avg)) av.push('Інженерія — ' + formatAvg(model.e_avg));
+            if (formatAvg(model.m_avg)) av.push('Математика (M) — ' + formatAvg(model.m_avg));
+            if (av.length) {
+                html +=
+                    '<p>Середні значення за шкалою пунктів опитування (типовий діапазон 1–7): ' +
+                    esc(av.join('; ')) +
+                    '.</p>';
+            }
+
+            if (parts.length >= 4) {
+                html += '<p>Порядок зацікавленості за доменами STEM:</p><ol class="teacher-rec-ranking-list">';
+                parts.forEach(function (p) {
+                    html += '<li>' + esc(stemDiscUkFull(p)) + '</li>';
+                });
+                html += '</ol>';
+                html +=
+                    '<p><strong>Висновок:</strong> найвищі позиції зазвичай відповідають напрямам, де клас уже охоче включений у STEM-тематику; III та IV місця («' +
+                    esc(stemDiscUk(parts[2])) +
+                    '», «' +
+                    esc(stemDiscUk(parts[3])) +
+                    '») традиційно беруть за основу для методичних підказок і коригування уроків — саме для них нижче наведено наслідки дії та ресурси.</p>';
+            } else if (parts.length > 0) {
+                html +=
+                    '<p class="teacher-rec-muted">Ранжування ще неповне для побудови чотирьох позицій; дочекайтеся повного набору відповідей або перевірте інше опитування.</p>';
+            } else if (av.length) {
+                html +=
+                    '<p>Середні значення є, але порядок доменів ще не зібраний у повне ранжування — орієнтуйтеся на абсолютні середні й повну панель з графіками для деталізації.</p>';
+            }
+
+            return html;
+        }
+
+        function buildActionsHtml(bundle) {
+            var recs = bundle && bundle.recommendations ? bundle.recommendations : [];
+            if (!recs.length) {
+                return (
+                    '<p>Після появи повної моделі (усі чотири домени в ранжуванні) тут автоматично з’являться блоки для III та IV місць із практичними кроками та посиланнями. Наразі можете організувати збір відповідей або відкрити панель для перевірки статусу опитування.</p>'
+                );
+            }
+            var html =
+                '<p class="teacher-rec-intro"><strong>Наслідки дії:</strong> нижче — що це означає уроками й позакласною роботою (узгоджено з логікою STEM-моделі: підсилення напрямів на III–IV місцях).</p>';
+            recs.forEach(function (rec) {
+                html += '<div class="teacher-rec-block">';
+                html += '<h4 class="teacher-rec-title">' + esc(rec.title || stemDiscUk(rec.discipline)) + '</h4>';
+                if (rec.hints && rec.hints.length) {
+                    html += '<ul class="teacher-rec-hints">';
+                    rec.hints.forEach(function (h) {
+                        html += '<li>' + esc(h) + '</li>';
+                    });
+                    html += '</ul>';
+                }
+                if (rec.course_note) {
+                    html += '<p class="teacher-rec-note">' + esc(rec.course_note) + '</p>';
+                }
+                var links = [];
+                if (rec.video_url) {
+                    links.push(
+                        '<a href="' +
+                            esc(rec.video_url) +
+                            '" target="_blank" rel="noopener noreferrer">' +
+                            esc(rec.video_title || 'Відеоматеріали') +
+                            '</a>'
+                    );
+                }
+                if (rec.course_url) {
+                    links.push(
+                        '<a href="' +
+                            esc(rec.course_url) +
+                            '" target="_blank" rel="noopener noreferrer">' +
+                            esc(rec.course_title || 'Додатковий курс') +
+                            '</a>'
+                    );
+                }
+                if (links.length) {
+                    html += '<p class="teacher-rec-links">' + links.join(' · ') + '</p>';
+                }
+                html += '</div>';
+            });
+            return html;
+        }
+
+        function getSelectedSurveyId() {
+            var sel = document.getElementById('teacherSurveySel');
+            return sel && sel.value ? sel.value : '';
+        }
+
+        function refreshTeacherMaterialsPanel() {
+            var grid = document.getElementById('teacherMaterialsGrid');
+            if (!grid || !teacherChartCtl) return;
+            grid.innerHTML = '';
+            var sid = getSelectedSurveyId();
+            if (!teacherClassesCache.length) {
+                return;
+            }
+            if (!sid) {
+                grid.innerHTML =
+                    '<p class="account-muted">' +
+                    esc('Спочатку оберіть опитування у списку вище.') +
+                    '</p>';
+                return;
+            }
+            var inc = teacherChartCtl.getIncludedClasses();
+            if (!inc.length) {
+                grid.innerHTML =
+                    '<p class="account-muted">' +
+                    esc('Позначте хоч один клас у списку «Класи».') +
+                    '</p>';
+                return;
+            }
+            inc.forEach(function (c) {
+                var bundle = teacherMaterialsByClassId[c.id];
+                var card = document.createElement('article');
+                card.className = 'teacher-hub-material-card';
+                var label =
+                    esc(c.name != null ? c.name : 'Клас') + ', ' + esc(c.grade != null ? String(c.grade) : '?') + '-й клас';
+                card.innerHTML =
+                    '<header class="teacher-hub-material-head"><h4 class="teacher-hub-material-h4">' +
+                    label +
+                    '</h4></header>';
+                var body = document.createElement('div');
+                body.className = 'teacher-hub-material-body';
+                if (bundle === undefined) {
+                    body.innerHTML =
+                        '<p class="teacher-hub-chart-quiet account-muted">' +
+                        esc('Завантаження…') +
+                        '</p>';
+                } else if (bundle === null) {
+                    body.innerHTML =
+                        '<p class="teacher-hub-chart-quiet account-muted">' +
+                        esc('Не вдалося підвантажити блок для цього класу.') +
+                        '</p>';
+                } else {
+                    body.innerHTML = recommendationBundleToMaterialsHtml(bundle);
+                }
+                card.appendChild(body);
+
+                var foot = document.createElement('div');
+                foot.className = 'teacher-hub-material-card-footer';
+                var bp = document.createElement('button');
+                bp.type = 'button';
+                bp.className = 'btn btn-outline teacher-hub-material-class-page-btn';
+                bp.textContent = 'Особиста сторінка класу (матеріали, файли, відео)';
+                bp.title =
+                    'Повна панель керування: модель класу, експорт, посилання та рекомендовані матеріали для цього класу.';
+                bp.addEventListener('click', function () {
+                    openDashboardForClass(c.id);
+                });
+                foot.appendChild(bp);
+                card.appendChild(foot);
+
+                grid.appendChild(card);
+            });
+        }
+
+        function loadTeacherRecommendationMaterials() {
+            var st = document.getElementById('teacherMaterialsStatus');
+            teacherMaterialsByClassId = {};
+            var sid = getSelectedSurveyId();
+            refreshTeacherMaterialsPanel();
+
+            if (!teacherChartCtl || !teacherClassesCache.length || !sid) {
+                if (st) st.textContent = '';
+                return;
+            }
+
+            if (st) st.textContent = 'Оновлення матеріалів…';
+
+            Promise.all(
+                teacherClassesCache.map(function (c) {
+                    var url =
+                        base +
+                        '/api/class-models/' +
+                        encodeURIComponent(c.id) +
+                        '/' +
+                        encodeURIComponent(sid) +
+                        '/recommendations';
+                    return fetch(url, { headers: headers }).then(function (r) {
+                        return r.ok ? r.json() : null;
+                    });
+                })
+            )
+                .then(function (bundles) {
+                    teacherClassesCache.forEach(function (c, i) {
+                        teacherMaterialsByClassId[c.id] = bundles[i];
+                    });
+                    if (st) st.textContent = '';
+                    refreshTeacherMaterialsPanel();
+                })
+                .catch(function () {
+                    teacherClassesCache.forEach(function (c) {
+                        teacherMaterialsByClassId[c.id] = null;
+                    });
+                    if (st) {
+                        st.textContent =
+                            'Не вдалося підвантажити матеріали. Спробуйте інше опитування або оновіть сторінку.';
+                    }
+                    refreshTeacherMaterialsPanel();
+                });
+        }
+
+        function surveyLabelById(sid) {
+            for (var i = 0; i < surveysCache.length; i++) {
+                if (surveysCache[i].id === sid) return surveysCache[i].name || sid;
+            }
+            return sid;
+        }
+
+        function fillSurveySelect(surveys) {
+            surveysCache = Array.isArray(surveys) ? surveys.slice() : [];
+            var sel = document.getElementById('teacherSurveySel');
+            sel.innerHTML = '';
+            if (!surveysCache.length) {
+                var opt = document.createElement('option');
+                opt.value = '';
+                opt.textContent = 'Немає опитувань у системі';
+                sel.appendChild(opt);
+                sel.disabled = true;
+                return;
+            }
+            sel.disabled = false;
+            surveysCache.sort(function (a, b) {
+                if (!!b.is_active !== !!a.is_active) return (b.is_active ? 1 : 0) - (a.is_active ? 1 : 0);
+                return String(a.name || '').localeCompare(String(b.name || ''));
+            });
+            surveysCache.forEach(function (s) {
+                var o = document.createElement('option');
+                o.value = s.id;
+                o.textContent = (s.name || 'Опитування') + (s.is_active === false ? ' (неактивне)' : '');
+                sel.appendChild(o);
+            });
+        }
+
+        function setupTeacherRecDialog() {
+            var dialog = document.getElementById('teacherRecDialog');
+            document.getElementById('teacherRecClose').addEventListener('click', function () {
+                dialog.close();
+            });
+            document.getElementById('teacherRecOpenDashboard').addEventListener('click', function () {
+                if (teacherRecDialogClassId) openDashboardForClass(teacherRecDialogClassId);
+            });
+            dialog.addEventListener('click', function (e) {
+                if (e.target === dialog) dialog.close();
+            });
+        }
+
+        setupTeacherRecDialog();
+
+        function openTeacherRecModal(classId, classLabel) {
+            var sid = getSelectedSurveyId();
+            var dialog = document.getElementById('teacherRecDialog');
+            var loading = document.getElementById('teacherRecLoading');
+            var errEl = document.getElementById('teacherRecError');
+            var body = document.getElementById('teacherRecBody');
+            teacherRecDialogClassId = classId;
+
+            document.getElementById('teacherRecDialogTitle').textContent = classLabel || 'Клас';
+            document.getElementById('teacherRecSurveyLabel').textContent = sid
+                ? 'Опитування: ' + surveyLabelById(sid)
+                : 'Спочатку оберіть опитування у списку вище.';
+
+            errEl.hidden = true;
+            errEl.textContent = '';
+            body.hidden = true;
+            loading.hidden = false;
+
+            if (!sid) {
+                loading.hidden = true;
+                errEl.hidden = false;
+                errEl.textContent = 'Оберіть опитування у блоці над списком класів.';
+                dialog.showModal();
+                return;
+            }
+
+            dialog.showModal();
+
+            var urlModel =
+                base +
+                '/api/class-models/' +
+                encodeURIComponent(classId) +
+                '/' +
+                encodeURIComponent(sid);
+            var urlRec = urlModel + '/recommendations';
+
+            Promise.all([
+                fetch(urlModel, { headers: headers }).then(function (r) {
+                    if (!r.ok) throw new Error('Не вдалося завантажити модель класу (' + r.status + ').');
+                    return r.json();
+                }),
+                fetch(urlRec, { headers: headers }).then(function (r) {
+                    if (!r.ok) throw new Error('Не вдалося завантажити рекомендації (' + r.status + ').');
+                    return r.json();
+                }),
+            ])
+                .then(function (tuple) {
+                    var model = tuple[0];
+                    var bundle = tuple[1];
+                    loading.hidden = true;
+                    document.getElementById('teacherRecConclusion').innerHTML = buildConclusionHtml(model, classLabel);
+                    document.getElementById('teacherRecActions').innerHTML = buildActionsHtml(bundle);
+                    body.hidden = false;
+                })
+                .catch(function (e) {
+                    loading.hidden = true;
+                    errEl.hidden = false;
+                    errEl.textContent =
+                        e && e.message ? e.message : 'Помилка мережі. Перевірте з’єднання або спробуйте пізніше.';
+                });
+        }
+
+        fetch(base + '/api/me', { headers: headers })
+            .then(function (r) {
+                if (!r.ok) {
+                    window.location.href = 'login.html';
+                    return null;
+                }
+                return r.json();
+            })
+            .then(function (user) {
+                if (!user) return;
+                if (user.account_kind === 'student') {
+                    window.location.replace('student-hub.html');
+                    return;
+                }
+                if (user.account_kind !== 'teacher') {
+                    window.location.replace('dashboard.html');
+                    return;
+                }
+
+                document.getElementById('teacherLead').textContent =
+                    (user.email || '') + ' — перегляд класів та STEM-лінії.';
+
+                var spec = user.stem_specialty;
+                var pack = STEM_FOCUS_UK[String(spec || '').toUpperCase()];
+                document.getElementById('stemFocusLine').innerHTML = pack
+                    ? '<strong>' + esc(pack.title) + '</strong>'
+                    : 'STEM-лінія <span class="account-muted">ще не призначена — графіки показують усереднений профіль STEM</span>';
+                document.getElementById('stemFocusHint').textContent = pack ? pack.hint : '';
+                teacherStemSpecialty = user.stem_specialty ? String(user.stem_specialty).toUpperCase() : '';
+
+                return Promise.all([
+                    fetch(base + '/api/classes', { headers: headers }).then(function (r) {
+                        return r.ok ? r.json() : [];
+                    }),
+                    fetch(base + '/api/surveys', { headers: headers }).then(function (r) {
+                        return r.ok ? r.json() : [];
+                    }),
+                ]);
+            })
+            .then(function (pair) {
+                if (!pair || !Array.isArray(pair[0])) return;
+                fillSurveySelect(pair[1]);
+                bindTeacherSurveyForCharts();
+                var classes = pair[0];
+                teacherClassesCache = classes.slice();
+                var wrap = document.getElementById('classCards');
+                var emptyEl = document.getElementById('classCardsEmpty');
+                wrap.innerHTML = '';
+                if (!classes.length) {
+                    emptyEl.hidden = false;
+                    if (typeof StemTeacherChartsAPI !== 'undefined') {
+                        if (!teacherChartCtl) {
+                            teacherChartCtl = StemTeacherChartsAPI.mount({
+                                barCanvasId: 'teacherStemBarCanvas',
+                                donutCanvasId: 'teacherDonutCanvas',
+                                classListHostId: 'teacherClassIncludeList',
+                                donutSaladCheckId: 'teacherDonutSalad',
+                                donutBlueCheckId: 'teacherDonutBlue',
+                                statusElId: 'teacherChartStatus',
+                                donutCaptionId: 'teacherDonutCaption',
+                                specialtyLetter: teacherStemSpecialty,
+                                onIncludedClassesChange: refreshTeacherMaterialsPanel,
+                                classes: [],
+                                modelsByClassId: {},
+                            });
+                        } else {
+                            teacherChartCtl.setClasses([]);
+                            teacherChartCtl.setModels({});
+                            teacherChartCtl.setSpecialty(teacherStemSpecialty);
+                        }
+                        teacherChartCtl.setStatus('Немає приписаних класів для графіків.');
+                    }
+                    return;
+                }
+                emptyEl.hidden = true;
+                classes.sort(function (a, b) {
+                    return (
+                        Number(a.grade || 0) - Number(b.grade || 0) ||
+                        String(a.name).localeCompare(String(b.name))
+                    );
+                });
+                teacherClassesCache = classes.slice();
+
+                if (typeof StemTeacherChartsAPI !== 'undefined') {
+                    if (!teacherChartCtl) {
+                        teacherChartCtl = StemTeacherChartsAPI.mount({
+                            barCanvasId: 'teacherStemBarCanvas',
+                            donutCanvasId: 'teacherDonutCanvas',
+                            classListHostId: 'teacherClassIncludeList',
+                            donutSaladCheckId: 'teacherDonutSalad',
+                            donutBlueCheckId: 'teacherDonutBlue',
+                            statusElId: 'teacherChartStatus',
+                            donutCaptionId: 'teacherDonutCaption',
+                            specialtyLetter: teacherStemSpecialty,
+                            onIncludedClassesChange: refreshTeacherMaterialsPanel,
+                            classes: classes,
+                            modelsByClassId: {},
+                        });
+                    } else {
+                        teacherChartCtl.setSpecialty(teacherStemSpecialty);
+                        teacherChartCtl.setClasses(classes);
+                    }
+                    loadTeacherModelsForCharts();
+                }
+
+                classes.forEach(function (c) {
+                    var div = document.createElement('article');
+                    div.className = 'teacher-hub-class-card';
+                    div.innerHTML =
+                        '<h3>' +
+                        esc(c.name) +
+                        '</h3><p class="account-muted">' +
+                        esc(c.grade) +
+                        '-й клас</p>';
+                    var btnRow = document.createElement('div');
+                    btnRow.className = 'teacher-hub-class-actions';
+                    var btnRec = document.createElement('button');
+                    btnRec.type = 'button';
+                    btnRec.className = 'btn btn-accent';
+                    btnRec.textContent = 'Висновок і наслідки дії';
+                    var label = (c.name || 'Клас') + ', ' + String(c.grade) + '-й клас';
+                    btnRec.addEventListener('click', function () {
+                        openTeacherRecModal(c.id, label);
+                    });
+                    var btnDash = document.createElement('button');
+                    btnDash.type = 'button';
+                    btnDash.className = 'btn btn-outline';
+                    btnDash.textContent = 'Графіки в повній панелі';
+                    btnDash.addEventListener('click', function () {
+                        openDashboardForClass(c.id);
+                    });
+                    btnRow.appendChild(btnRec);
+                    btnRow.appendChild(btnDash);
+                    div.appendChild(btnRow);
+                    wrap.appendChild(div);
+                });
+            })
+            .catch(function () {});
+    </script>
+</body>
+</html>

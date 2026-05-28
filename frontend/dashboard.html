@@ -4,15 +4,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <meta name="theme-color" content="#0a0e27">
-    <title>Панель керування — STEM Diagnostic</title>
+    <title>Панель керування — STEM. Цифровий діагностичний інструмент</title>
     <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
 </head>
 <body class="page-dashboard">
     <header class="header">
         <div class="header-top">
             <div class="container header-inner">
-                <a href="index.html" class="logo" aria-label="STEM Diagnostic"><span class="logo-icon" aria-hidden="true">S</span><span class="logo-word">TEM Diagnostic</span></a>
+                <a href="index.html" class="logo" aria-label="STEM Diagnostic"><span class="logo-stem-letters" aria-hidden="true"><span class="logo-sl logo-sl--s">S</span><span class="logo-sl logo-sl--t">T</span><span class="logo-sl logo-sl--e">E</span><span class="logo-sl logo-sl--m">M</span></span><span class="logo-tail">Diagnostic</span></a>
                 <nav class="nav">
                     <a href="dashboard.html">Панель</a>
                     <a href="survey.html">Опитування</a>
@@ -101,6 +104,20 @@
                 <select id="compareB" style="width:100%;padding:0.75rem;border:1px solid var(--border);border-radius:8px"></select>
             </div>
             <button type="button" class="btn btn-outline" id="btnCompare" style="margin-top:0.5rem">Порівняти півріччя</button>
+            <div class="form-group school-export-scope" style="margin-top:1rem">
+                <fieldset style="border:1px solid var(--border);border-radius:8px;padding:0.75rem 1rem;margin:0">
+                    <legend style="font-size:0.92rem;padding:0 0.35rem">Охоплення експорту</legend>
+                    <label class="school-export-scope-option" style="display:block;margin:0.45rem 0;cursor:pointer">
+                        <input type="radio" name="exportSemScope" id="exportScopeOne" value="one" checked>
+                        <span>Одне півріччя — тільки опитування з поля «Опитування» вище.</span>
+                    </label>
+                    <label class="school-export-scope-option" id="exportScopeTwoLabel" style="display:block;margin:0.45rem 0;cursor:pointer;opacity:0.55">
+                        <input type="radio" name="exportSemScope" id="exportScopeTwo" value="two" disabled>
+                        <span>Два півріччя — перше з «Опитування», друге з «Порівняти з другим опитуванням»; у файлі будуть обидва періоди поруч (окремі блоки / аркуші).</span>
+                    </label>
+                    <p id="exportScopeHint" style="font-size:0.82rem;color:var(--text-light);margin:0.5rem 0 0">Щоб увімкнути другий варіант, оберіть у обох списках два різні опитування.</p>
+                </fieldset>
+            </div>
             <div class="school-export-actions" role="group" aria-label="Експорт звіту">
                 <button type="button" class="btn btn-outline" id="btnCsv">Експорт CSV</button>
                 <button type="button" class="btn btn-outline" id="btnXlsx">Експорт Excel</button>
@@ -132,7 +149,7 @@
                 <select id="selSurvey" style="width:100%;padding:0.75rem;border:1px solid var(--border);border-radius:8px"></select>
             </div>
             <button type="button" class="btn btn-accent" id="btnLoad">Показати модель і рекомендації</button>
-            <button type="button" class="btn btn-outline" id="btnArticle" style="margin-left:0.5rem">Модель за статтею (К1–К5)</button>
+            <button type="button" class="btn btn-outline" id="btnArticle" style="margin-left:0.5rem">Модель (К1–К5)</button>
             <div id="modelOut" style="margin-top:1.5rem;display:none"></div>
         </div>
         <p id="modelNote" style="margin-top:1rem;color:var(--text-light);font-size:0.9rem"></p>
@@ -153,8 +170,14 @@
         });
 
         function fillSurveySelects(surveys) {
-            const opts = '<option value="">— оберіть —</option>' + surveys.map(s =>
-                '<option value="' + s.id + '">' + s.name + '</option>').join('');
+            const opts =
+                '<option value="">— оберіть —</option>' +
+                surveys
+                    .map((s) => {
+                        const arch = s.is_active === false ? ' (архів)' : '';
+                        return '<option value="' + s.id + '">' + s.name + arch + '</option>';
+                    })
+                    .join('');
             ['selSurvey', 'schoolSurvey', 'compareB', 'netSurvey'].forEach(id => {
                 const el = document.getElementById(id);
                 if (el) el.innerHTML = opts;
@@ -209,6 +232,20 @@
             if (user.role === 'admin' || user.staff_scope) {
                 document.getElementById('schoolPanel').style.display = 'block';
             }
+            if (user.account_kind === 'support') {
+                var _exp = document.querySelector('#schoolPanel .school-export-actions');
+                if (_exp) _exp.style.display = 'none';
+                var _scope = document.querySelector('#schoolPanel .school-export-scope');
+                if (_scope) _scope.style.display = 'none';
+                var _hp = document.querySelector('#schoolPanel h2');
+                if (_hp && !document.getElementById('supportSchoolNote')) {
+                    var _sn = document.createElement('p');
+                    _sn.id = 'supportSchoolNote';
+                    _sn.style.cssText = 'font-size:0.88rem;color:var(--text-light);margin:0 0 0.85rem';
+                    _sn.textContent = 'Режим служби підтримки: огляд аналітики та порівняння опитувань; експорт CSV/Excel/PDF/Word недоступний.';
+                    _hp.after(_sn);
+                }
+            }
             if (user.role === 'admin') {
                 document.getElementById('adminNetworkPanel').style.display = 'block';
                 document.getElementById('adminDataPanel').style.display = 'block';
@@ -226,15 +263,36 @@
                 ? classes.map(c => c.name + ' (' + c.grade + ' кл.)').join('<br>')
                 : 'Немає класів.';
             document.getElementById('surveysList').innerHTML = surveys.length
-                ? surveys.map(s => s.name).join('<br>')
+                ? surveys
+                      .map(
+                          (s) =>
+                              s.name + (s.is_active === false ? ' <span style="color:var(--text-light)">(архів)</span>' : '')
+                      )
+                      .join('<br>')
                 : 'Немає опитувань.';
             document.getElementById('studentSurveys').innerHTML = surveys.length
-                ? surveys.map(s => '• ' + s.name + '<br>').join('')
+                ? surveys
+                      .map(
+                          (s) =>
+                              '• ' +
+                              s.name +
+                              (s.is_active === false ? ' <span style="color:var(--text-light)">(архів)</span>' : '') +
+                              '<br>'
+                      )
+                      .join('')
                 : 'Немає опитувань.';
             fillSurveySelects(surveys);
+            syncExportCompareAvailability();
             const sc = document.getElementById('selClass');
             sc.innerHTML = '<option value="">— оберіть —</option>' + classes.map(c =>
                 '<option value="' + c.id + '">' + c.name + '</option>').join('');
+            try {
+                const preset = sessionStorage.getItem('stem_preset_class_id');
+                if (preset) {
+                    sc.value = preset;
+                    sessionStorage.removeItem('stem_preset_class_id');
+                }
+            } catch (e) {}
         });
 
         document.getElementById('btnLoad').addEventListener('click', async () => {
@@ -278,6 +336,144 @@
             out.innerHTML = html;
         });
 
+        const STEM_COLORS = { S: '#22c55e', T: '#f43f5e', E: '#f97316', M: '#3b82f6' };
+        const STEM_LABELS_UK = { S: 'Наука', T: 'Технології', E: 'Інженерія', M: 'Математика' };
+        function stemChartAxisLabel(code) {
+            return STEM_LABELS_UK[code] || code;
+        }
+        function stemAvgDisciplineNameHtml(code) {
+            return escHtml(STEM_LABELS_UK[code]);
+        }
+        const CHART_ANIM_MS = 780;
+        function disciplineSummaryFromClasses(rows) {
+            const keys = [['S', 's_avg'], ['T', 't_avg'], ['E', 'e_avg'], ['M', 'm_avg']];
+            const vals = {};
+            for (let ki = 0; ki < keys.length; ki++) {
+                const code = keys[ki][0];
+                const k = keys[ki][1];
+                const nums = [];
+                for (let ri = 0; ri < rows.length; ri++) {
+                    const row = rows[ri];
+                    const v = row[k];
+                    if (v != null && v !== '') {
+                        const f = Number(v);
+                        if (!Number.isNaN(f)) nums.push(f);
+                    }
+                }
+                if (nums.length) vals[code] = nums.reduce(function (a, b) { return a + b; }, 0) / nums.length;
+            }
+            const codes = Object.keys(vals);
+            if (!codes.length) return [];
+            const total = codes.reduce(function (acc, c) { return acc + vals[c]; }, 0);
+            const sorted = codes.slice().sort(function (a, b) { return vals[b] - vals[a]; });
+            return sorted.map(function (code, i) {
+                return {
+                    code: code,
+                    label: STEM_LABELS_UK[code] || code,
+                    avg: Math.round(vals[code] * 100) / 100,
+                    pct_share: total > 0 ? Math.round(vals[code] / total * 1000) / 10 : 0,
+                    rank: i + 1
+                };
+            });
+        }
+        function escHtml(s) {
+            if (s == null || s === undefined) return '';
+            return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;');
+        }
+        function stemDisciplineBadgeHtml(letter) {
+            var raw = String(letter == null ? '' : letter).trim();
+            var L = raw.charAt(0).toUpperCase();
+            if (!L) {
+                return '<span class="stem-disc-badge stem-disc-badge--unknown">—</span>';
+            }
+            if (!STEM_COLORS[L]) {
+                return '<span class="stem-disc-badge stem-disc-badge--unknown" title="">' + escHtml(raw) + '</span>';
+            }
+            var title = STEM_LABELS_UK[L] || L;
+            return (
+                '<span class="stem-disc-badge stem-disc-badge--' +
+                L +
+                '" title="' +
+                escAttr(title) +
+                '">' +
+                escHtml(L) +
+                '</span>'
+            );
+        }
+        function normalizeStemPermutation(str) {
+            var STEM_ORDER = ['S', 'T', 'E', 'M'];
+            var seen = {};
+            var out = [];
+            var raw = String(str == null ? '' : str).trim().toUpperCase();
+            var parts = raw.split(/[\-\s·,_]+/).filter(function (x) {
+                return x.length;
+            });
+            var chars = [];
+            if (parts.length === 1 && parts[0].length > 1 && !/[^\sSTEM]/i.test(parts[0])) {
+                chars = parts[0].replace(/\s/g, '').split('');
+            } else {
+                parts.forEach(function (p) {
+                    var t = String(p).replace(/\s/g, '');
+                    if (t.length <= 1) chars.push(t);
+                    else {
+                        for (var j = 0; j < t.length; j++) {
+                            chars.push(t.charAt(j));
+                        }
+                    }
+                });
+            }
+            chars.forEach(function (L) {
+                L = String(L).toUpperCase();
+                if (!STEM_LABELS_UK[L] || seen[L]) return;
+                seen[L] = true;
+                out.push(L);
+            });
+            STEM_ORDER.forEach(function (L) {
+                if (!seen[L]) out.push(L);
+            });
+            return out;
+        }
+        function stemRankingBadgesHtml(str, hero) {
+            if (!str) {
+                return '<span class="class-model-muted">—</span>';
+            }
+            var parts = normalizeStemPermutation(str);
+            var wrapCls = 'class-model-stem-sequence' + (hero ? ' class-model-stem-sequence--hero' : '');
+            var inner = parts
+                .map(function (p) {
+                    return stemDisciplineBadgeHtml(p);
+                })
+                .join('');
+            return '<span class="' + wrapCls + '">' + inner + '</span>';
+        }
+        function formatArticleModelAverages(m) {
+            var order = ['S', 'T', 'E', 'M'];
+            var keys = { S: 's_avg', T: 't_avg', E: 'e_avg', M: 'm_avg' };
+            var cards = order.map(function (code) {
+                var v = m[keys[code]];
+                var val =
+                    v != null && v !== '' && !Number.isNaN(Number(v))
+                        ? Number(v).toFixed(2)
+                        : '—';
+                return (
+                    '<div class="class-model-avg-card">' +
+                    '<span class="stem-disc-badge stem-disc-badge--' +
+                    code +
+                    '" title="' +
+                    escAttr(STEM_LABELS_UK[code]) +
+                    '">' +
+                    code +
+                    '</span>' +
+                    '<div class="class-model-avg-val">' +
+                    escHtml(val) +
+                    '</div>' +
+                    '<div class="class-model-avg-name">' +
+                    stemAvgDisciplineNameHtml(code) +
+                    '</div></div>'
+                );
+            });
+            return '<div class="class-model-avg-grid">' + cards.join('') + '</div>';
+        }
         document.getElementById('btnArticle').addEventListener('click', async () => {
             const cid = document.getElementById('selClass').value;
             const sid = document.getElementById('selSurvey').value;
@@ -287,30 +483,88 @@
                 out.innerHTML = '<p class="form-error">Оберіть клас і опитування.</p>';
                 return;
             }
-            const res = await fetch(base + '/api/class-models/' + cid + '/' + sid + '/article', { headers });
+            const [res, rRes] = await Promise.all([
+                fetch(base + '/api/class-models/' + cid + '/' + sid + '/article', { headers }),
+                fetch(base + '/api/class-models/' + cid + '/' + sid + '/recommendations', { headers })
+            ]);
             const data = await res.json().catch(() => ({}));
+            const rec = await rRes.json().catch(() => ({}));
             out.style.display = 'block';
             if (!res.ok) {
                 out.innerHTML = '<p>' + (data.detail || 'Помилка') + '</p>';
                 return;
             }
-            let html = '<p><strong>За статтею (К1–К5):</strong> ' + (data.ranking_article || '—') + '</p>';
-            html += '<p><strong>Середні (як у спрощеній моделі):</strong> ' + (data.ranking || '—') + '</p>';
-            if (data.k_table) {
-                html += '<table style="width:100%;border-collapse:collapse;margin-top:0.5rem;font-size:0.9rem"><tr><th></th><th>I</th><th>II</th><th>III</th><th>IV</th></tr>';
-                data.k_table.forEach(row => {
-                    html += '<tr><td>' + row.k + '</td>' + row.order.map(o => '<td>' + o + '</td>').join('') + '</tr>';
+            let html = '<div class="class-model-article">';
+            html +=
+                '<div class="class-model-hero-legend"><span class="class-model-hero-legend-note">Значення</span>' +
+                stemRankingBadgesHtml(data.ranking_article, true) +
+                '<span class="class-model-hero-legend-note">Likert Scale (від 1 до 7)</span></div>';
+            html += '<h3 class="class-model-block-title">Значення Likert Scale (від 1 до 7)</h3>';
+            html += formatArticleModelAverages(data);
+            html +=
+                '<p class="class-model-ranking-plain"><span class="class-model-muted">Ранжування за середніми значеннями (як у спрощеній моделі):</span> ' +
+                stemRankingBadgesHtml(data.ranking, false) +
+                '</p>';
+            html += '<h3 class="class-model-block-title">Блоки К1–К5</h3>';
+            html +=
+                '<p class="class-model-k-caption">Для кожного рядка К1…К5 — місця I…IV: порядок S, T, E, M від найвищого середнього в блоці до найнижчого.</p>';
+            if (data.k_table && data.k_table.length) {
+                html +=
+                    '<table class="class-model-k-table"><thead><tr><th></th><th scope="col">I</th><th scope="col">II</th><th scope="col">III</th><th scope="col">IV</th></tr></thead><tbody>';
+                data.k_table.forEach(function (row) {
+                    html +=
+                        '<tr><th scope="row" class="class-model-k-label">' +
+                        escHtml(row.k) +
+                        '</th>';
+                    (row.order || []).forEach(function (cell) {
+                        var cellStr = String(cell == null ? '' : cell);
+                        var badges = cellStr
+                            .split('')
+                            .filter(function (ch) {
+                                return ch.trim().length;
+                            })
+                            .map(function (ch) {
+                                return stemDisciplineBadgeHtml(ch);
+                            })
+                            .join('');
+                        html += '<td><div class="class-model-k-cells">' + badges + '</div></td>';
+                    });
+                    html += '</tr>';
                 });
-                html += '</table>';
+                html += '</tbody></table>';
             }
+            if (rec.recommendations && rec.recommendations.length) {
+                html +=
+                    '<h3 class="class-model-block-title">Орієнтири (III–IV місця)</h3><ul class="class-model-rec-list">';
+                rec.recommendations.forEach(function (x) {
+                    html += '<li><strong>' + escHtml(x.title) + '</strong>';
+                    if (x.video_url) {
+                        html +=
+                            '<div style="margin-top:0.35rem;font-size:0.95rem"><a href="' +
+                            escAttr(x.video_url) +
+                            '" target="_blank" rel="noopener">' +
+                            escHtml(x.video_title || 'Відео') +
+                            '</a></div>';
+                    }
+                    if (x.course_url) {
+                        html +=
+                            '<div style="margin-top:0.25rem;font-size:0.95rem"><a href="' +
+                            escAttr(x.course_url) +
+                            '" target="_blank" rel="noopener">' +
+                            escHtml(x.course_title || 'Курс') +
+                            '</a></div>';
+                    }
+                    html += '<ul style="margin-top:0.25rem;padding-left:1.1rem">';
+                    (x.hints || []).forEach(function (h) {
+                        html += '<li>' + escHtml(h) + '</li>';
+                    });
+                    html += '</ul></li>';
+                });
+                html += '</ul>';
+            }
+            html += '</div>';
             out.innerHTML = html;
         });
-
-        const STEM_COLORS = { S: '#3b82f6', T: '#8b5cf6', E: '#10b981', M: '#f59e0b' };
-        function escHtml(s) {
-            if (s == null || s === undefined) return '';
-            return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;');
-        }
         function splitClassesBySchoolTier(all) {
             const middle = [];
             const high = [];
@@ -337,43 +591,133 @@
         function mountSchoolAnalyticsCharts(root, data) {
             if (!root || typeof Chart === 'undefined') return;
             destroySchoolAnalyticsCharts(root);
-            const summary = data.discipline_summary || [];
             const classes = data.classes || [];
-            const hasStem = classes.some(classHasStem);
-            const donutEl = root.querySelector('canvas[data-chart="donut"]');
-            if (donutEl && summary.length) {
+            const donutLegendPos = typeof window !== 'undefined' && window.matchMedia && window.matchMedia('(max-width: 900px)').matches ? 'bottom' : 'right';
+            const narrow = typeof window !== 'undefined' && window.matchMedia && window.matchMedia('(max-width: 520px)').matches;
+
+            root.querySelectorAll('canvas[data-chart="donut"][data-school-tier]').forEach(function (donutEl) {
+                var tier = donutEl.getAttribute('data-school-tier');
+                var tierClasses = classes;
+                if (tier === 'middle') tierClasses = classes.filter(function (c) { return c.grade != null && c.grade >= 5 && c.grade <= 9; });
+                else if (tier === 'high') tierClasses = classes.filter(function (c) { return c.grade != null && c.grade >= 10 && c.grade <= 12; });
+                else if (tier === 'other') tierClasses = classes.filter(function (c) { var g = c.grade; return g == null || g < 5 || g > 12; });
+                var summary = disciplineSummaryFromClasses(tierClasses.filter(classHasStem));
+                if (!summary.length) return;
                 new Chart(donutEl.getContext('2d'), {
                     type: 'doughnut',
                     data: {
-                        labels: summary.map(function (d) { return d.label; }),
+                        labels: summary.map(function (d) { return stemChartAxisLabel(d.code); }),
                         datasets: [{
                             data: summary.map(function (d) { return d.pct_share != null ? d.pct_share : 0; }),
                             backgroundColor: summary.map(function (d) { return STEM_COLORS[d.code] || '#64748b'; }),
                             borderColor: '#ffffff',
                             borderWidth: 2,
-                            hoverOffset: 6
+                            hoverOffset: 10
                         }]
                     },
                     options: {
                         responsive: true,
                         maintainAspectRatio: false,
+                        animation: { duration: CHART_ANIM_MS, easing: 'easeOutQuart' },
                         cutout: '52%',
+                        layout: { padding: { top: 4, right: 8, bottom: 4, left: 4 } },
+                        interaction: { mode: 'nearest', intersect: true },
                         plugins: {
-                            legend: { position: 'bottom', labels: { boxWidth: 14, padding: 10, font: { size: 11 } } },
+                            legend: { position: donutLegendPos, labels: { boxWidth: 14, padding: 14, font: { size: narrow ? 10 : 11 } } },
                             tooltip: {
+                                clip: false,
+                                caretPadding: 10,
+                                maxWidth: 260,
+                                bodySpacing: 4,
                                 callbacks: {
                                     label: function (ctx) {
                                         var i = ctx.dataIndex;
                                         var s = summary[i];
                                         if (!s) return '';
-                                        return ' ' + s.label + ': середнє ' + (s.avg != null ? s.avg : '—') + ', частка ' + (s.pct_share != null ? s.pct_share + '%' : '—') + ', місце ' + s.rank;
+                                        return (
+                                            ' середнє ' +
+                                            (s.avg != null ? s.avg : '—') +
+                                            ', частка ' +
+                                            (s.pct_share != null ? s.pct_share + '%' : '—')
+                                        );
+                                    },
+                                    afterLabel: function (ctx) {
+                                        var i = ctx.dataIndex;
+                                        var s = summary[i];
+                                        if (!s) return '';
+                                        return 'місце ' + s.rank;
                                     }
                                 }
                             }
                         }
                     }
                 });
-            }
+            });
+            root.querySelectorAll('canvas[data-chart="radar"][data-school-tier]').forEach(function (radarEl) {
+                var tier = radarEl.getAttribute('data-school-tier');
+                var tierClasses = classes;
+                if (tier === 'middle') tierClasses = classes.filter(function (c) { return c.grade != null && c.grade >= 5 && c.grade <= 9; });
+                else if (tier === 'high') tierClasses = classes.filter(function (c) { return c.grade != null && c.grade >= 10 && c.grade <= 12; });
+                else if (tier === 'other') tierClasses = classes.filter(function (c) { var g = c.grade; return g == null || g < 5 || g > 12; });
+                var summary = disciplineSummaryFromClasses(tierClasses.filter(classHasStem));
+                if (!summary.length) return;
+                var STEM_ORDER = [{ code: 'S', labelUa: 'Наука' }, { code: 'T', labelUa: 'Технології' }, { code: 'E', labelUa: 'Інженерія' }, { code: 'M', labelUa: 'Математика' }];
+                var dataVals = STEM_ORDER.map(function (o) {
+                    var row = summary.find(function (x) { return x.code === o.code; });
+                    return row && row.avg != null ? Number(row.avg) : 4;
+                });
+                var labelsUa = STEM_ORDER.map(function (o) { return stemChartAxisLabel(o.code); });
+                new Chart(radarEl.getContext('2d'), {
+                    type: 'radar',
+                    data: {
+                        labels: labelsUa,
+                        datasets: [{
+                            label: 'Середнє по зрізу (1–7)',
+                            data: dataVals,
+                            borderColor: 'rgba(0, 212, 170, 0.98)',
+                            backgroundColor: 'rgba(0, 212, 170, 0.18)',
+                            pointBackgroundColor: dataVals.map(function (_, i) { return STEM_COLORS[STEM_ORDER[i].code] || '#64748b'; }),
+                            pointBorderColor: '#ffffff',
+                            pointHoverBackgroundColor: '#ffffff',
+                            pointRadius: narrow ? 3 : 4,
+                            borderWidth: 2
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        animation: { duration: CHART_ANIM_MS, easing: 'easeOutQuart' },
+                        scales: {
+                            r: {
+                                angleLines: { color: 'rgba(148, 163, 184, 0.25)' },
+                                grid: { color: 'rgba(148, 163, 184, 0.2)' },
+                                pointLabels: {
+                                    font: {
+                                        size: narrow ? 10 : 11,
+                                        family: "'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif",
+                                    },
+                                    centerPointLabels: true,
+                                },
+                                suggestedMin: 1,
+                                suggestedMax: 7,
+                                ticks: { stepSize: 1, backdropColor: 'transparent', font: { size: 10 } }
+                            }
+                        },
+                        plugins: {
+                            legend: { display: false },
+                            tooltip: {
+                                callbacks: {
+                                    label: function (ctx) {
+                                        var idx = ctx.dataIndex;
+                                        var ua = STEM_ORDER[idx].labelUa;
+                                        return ' ' + ua + ': ' + (dataVals[idx] != null ? dataVals[idx].toFixed(2) : '—');
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            });
             root.querySelectorAll('canvas[data-chart="bars"]').forEach(function (barEl) {
                 const tier = barEl.getAttribute('data-school-tier');
                 let tierClasses = classes;
@@ -393,35 +737,60 @@
                     const h = Math.min(880, Math.max(240, tierClasses.length * 34));
                     box.style.height = h + 'px';
                 }
-                const narrow = typeof window !== 'undefined' && window.matchMedia && window.matchMedia('(max-width: 520px)').matches;
                 new Chart(barEl.getContext('2d'), {
                     type: 'bar',
                     data: {
                         labels: tierClasses.map(function (c) { return c.name; }),
                         datasets: [
-                            { label: 'S', data: tierClasses.map(function (c) { return c.s_avg != null ? Number(c.s_avg) : null; }), backgroundColor: STEM_COLORS.S, borderRadius: 3 },
-                            { label: 'T', data: tierClasses.map(function (c) { return c.t_avg != null ? Number(c.t_avg) : null; }), backgroundColor: STEM_COLORS.T, borderRadius: 3 },
-                            { label: 'E', data: tierClasses.map(function (c) { return c.e_avg != null ? Number(c.e_avg) : null; }), backgroundColor: STEM_COLORS.E, borderRadius: 3 },
-                            { label: 'M', data: tierClasses.map(function (c) { return c.m_avg != null ? Number(c.m_avg) : null; }), backgroundColor: STEM_COLORS.M, borderRadius: 3 }
+                            { label: 'S', data: tierClasses.map(function (c) { return c.s_avg != null ? Number(c.s_avg) : null; }), backgroundColor: STEM_COLORS.S, borderRadius: 4 },
+                            { label: 'T', data: tierClasses.map(function (c) { return c.t_avg != null ? Number(c.t_avg) : null; }), backgroundColor: STEM_COLORS.T, borderRadius: 4 },
+                            { label: 'E', data: tierClasses.map(function (c) { return c.e_avg != null ? Number(c.e_avg) : null; }), backgroundColor: STEM_COLORS.E, borderRadius: 4 },
+                            { label: 'M', data: tierClasses.map(function (c) { return c.m_avg != null ? Number(c.m_avg) : null; }), backgroundColor: STEM_COLORS.M, borderRadius: 4 }
                         ]
                     },
                     options: {
                         indexAxis: 'y',
                         responsive: true,
                         maintainAspectRatio: false,
-                        interaction: { mode: 'index', intersect: false },
+                        animation: { duration: CHART_ANIM_MS, easing: 'easeOutQuart' },
+                        layout: { padding: { top: narrow ? 18 : 8, right: 14, bottom: 10, left: 6 } },
+                        interaction: { mode: 'index', intersect: false, axis: 'y' },
                         scales: {
                             x: {
+                                type: 'linear',
                                 min: 1,
                                 max: 7,
                                 ticks: { stepSize: 1, font: { size: narrow ? 10 : 11 } },
-                                title: { display: true, text: 'Середнє (1–7)', font: { size: 11 } },
+                                title: { display: false },
                                 grid: { color: 'rgba(148, 163, 184, 0.22)' }
                             },
-                            y: { ticks: { font: { size: narrow ? 9 : 11 } }, grid: { display: false } }
+                            y: {
+                                type: 'category',
+                                offset: true,
+                                ticks: { font: { size: narrow ? 9 : 11 }, autoSkip: false, padding: 8 },
+                                grid: { display: false }
+                            }
                         },
                         plugins: {
-                            legend: { position: narrow ? 'bottom' : 'top', labels: { boxWidth: 10, font: { size: 10 }, padding: 8 } }
+                            legend: { position: narrow ? 'bottom' : 'top', labels: { boxWidth: 12, font: { size: 10 }, padding: 10 } },
+                            tooltip: {
+                                clip: false,
+                                caretPadding: 8,
+                                animation: { duration: 180 },
+                                callbacks: {
+                                    title: function (items) {
+                                        if (!items.length) return '';
+                                        var row = tierClasses[items[0].dataIndex];
+                                        return row ? row.name : '';
+                                    },
+                                    label: function (ctx) {
+                                        var lbl = ctx.dataset && ctx.dataset.label ? ctx.dataset.label : '';
+                                        var raw = ctx.raw;
+                                        if (raw == null || Number.isNaN(Number(raw))) return lbl + ': —';
+                                        return lbl + ': ' + Number(raw).toFixed(1).replace('.', ',');
+                                    }
+                                }
+                            }
                         }
                     }
                 });
@@ -430,52 +799,50 @@
         function htmlSchoolAnalyticsViz(data, opts) {
             opts = opts || {};
             var showTitle = opts.showTitle !== false;
-            var summary = data.discipline_summary || [];
             var classes = data.classes || [];
             var html = '<div class="school-analytics-viz">';
             if (showTitle) {
-                html += '<p class="analytics-school-title"><strong>' + escHtml(data.school_name || '') + '</strong></p>';
+                html += '<p class="analytics-school-title"><strong>' + escHtml(window.stemDisplaySchoolName(data.school_name || '')) + '</strong></p>';
             }
             if (!classes.length) {
-                html += '<p class="form-error analytics-empty-msg">Немає класів у вашому полі зору (роль/завуч) або школа без класів. Для демо виконайте сід і увійдіть як директор/завуч.</p></div>';
+                html += '<p class="form-error analytics-empty-msg">Немає класів у вашому полі зору або школа ще без класів. Перевірте роль або зверніться до адміністратора.</p></div>';
                 return html;
-            }
-            var hasStem = classes.some(classHasStem);
-            if (!hasStem) {
-                html += '<p class="form-error analytics-empty-msg">Немає відповідей учнів на обране опитування. Оберіть інше опитування або завантажте дані (сід / імпорт CSV).</p>';
             }
             var split = splitClassesBySchoolTier(classes);
             var tierDefs = [];
             if (split.middle.length) tierDefs.push({ key: 'middle', label: '5–9 класи (середня школа)', list: split.middle });
-            if (split.high.length) tierDefs.push({ key: 'high', label: '10–12 класи (старша школа)', list: split.high });
-            if (split.other.length) tierDefs.push({ key: 'other', label: '1–4 класи (початкова)', list: split.other });
-            html += '<div class="analytics-chart-grid">';
-            html += '<section class="analytics-chart-card">';
-            html += '<h4 class="analytics-chart-heading">Частки дисциплін (S / T / E / M)</h4>';
-            html += '<p class="analytics-chart-hint">Внесок кожної дисципліни в суму середніх по класах у полі зору; сегменти — від вищої середньої до нижчої.</p>';
-            if (summary.length) {
-                html += '<div class="analytics-canvas-box analytics-canvas-box--donut"><canvas data-chart="donut" role="img" aria-label="Кругова діаграма дисциплін STEM"></canvas></div>';
+            if (split.high.length) tierDefs.push({ key: 'high', label: '10–12 класи', list: split.high });
+            if (split.other.length) tierDefs.push({ key: 'other', label: 'Інші класи (за наявності)', list: split.other });
+            var hasStem = classes.some(classHasStem);
+            if (!hasStem) {
+                html += '<div class="analytics-chart-placeholder analytics-viz-empty" style="margin-bottom:1rem"><p>Немає відповідей учнів на це опитування. Оберіть інший період або зверніться до адміністратора.</p></div>';
             } else {
-                html += '<div class="analytics-chart-placeholder"><p>Недостатньо даних для кругової діаграми.</p></div>';
-            }
-            html += '</section>';
-            html += '<section class="analytics-chart-card analytics-chart-card--wide">';
-            html += '<h4 class="analytics-chart-heading">Класи: середні S · T · E · M</h4>';
-            html += '<p class="analytics-chart-hint" style="margin-top:0.2rem">Зрізи: <strong>5–9 (середня)</strong> та <strong>10–12 (старша)</strong>; за наявності — 1–4 (початкова).</p>';
-            if (hasStem) {
+                html += '<p class="analytics-chart-hint analytics-viz-lead">Зведення по зрізах 5–9 і 10–12: частка дисциплін STEM, профіль середніх 1–7 і стовпчики по класах.</p>';
+                html += '<div class="analytics-tiers-visual">';
                 tierDefs.forEach(function (td) {
-                    var tHasStem = td.list.some(classHasStem);
+                    var tierHasStem = td.list.some(classHasStem);
                     html += '<h5 class="analytics-tier-heading">' + escHtml(td.label) + '</h5>';
-                    if (tHasStem) {
-                        html += '<div class="analytics-canvas-box analytics-canvas-box--bars"><canvas data-chart="bars" data-school-tier="' + escHtml(td.key) + '" role="img" aria-label="Середні STEM за класом"></canvas></div>';
-                    } else {
-                        html += '<div class="analytics-chart-placeholder" style="min-height:100px"><p>У цьому зрізі ще немає відповідей.</p></div>';
+                    if (!tierHasStem) {
+                        html += '<div class="analytics-chart-placeholder analytics-tier-skip"><p>У цьому зрізі ще немає відповідей.</p></div>';
+                        return;
                     }
+                    html += '<div class="analytics-tier-visual-row">';
+                    html += '<section class="analytics-chart-card analytics-chart-card--tier-donut">';
+                    html += '<h6 class="analytics-chart-subheading">STEM-дисципліни</h6>';
+                    html += '<div class="analytics-canvas-box analytics-canvas-box--donut"><canvas data-chart="donut" data-school-tier="' + escHtml(td.key) + '" role="img" aria-label="Кругова діаграма дисциплін STEM"></canvas></div>';
+                    html += '</section>';
+                    html += '<section class="analytics-chart-card analytics-chart-card--tier-radar">';
+                    html += '<h6 class="analytics-chart-subheading">Діаграма «Профіль STEM»</h6>';
+                    html += '<div class="analytics-canvas-box analytics-canvas-box--radar"><canvas data-chart="radar" data-school-tier="' + escHtml(td.key) + '" role="img" aria-label="Радарний профіль середніх STEM"></canvas></div>';
+                    html += '</section>';
+                    html += '<section class="analytics-chart-card analytics-chart-card--tier-bars">';
+                    html += '<h6 class="analytics-chart-subheading">Середнє значення</h6>';
+                    html += '<div class="analytics-canvas-box analytics-canvas-box--bars"><canvas data-chart="bars" data-school-tier="' + escHtml(td.key) + '" role="img" aria-label="Горизонтальні стовпчики середніх STEM"></canvas></div>';
+                    html += '</section>';
+                    html += '</div>';
                 });
-            } else {
-                html += '<div class="analytics-chart-placeholder"><p>Графік з’явиться після появи відповідей.</p></div>';
+                html += '</div>';
             }
-            html += '</section></div>';
             html += '<h3 class="analytics-table-heading">Таблиця</h3>';
             tierDefs.forEach(function (td) {
                 html += '<h4 class="analytics-table-tier">' + escHtml(td.label) + '</h4>';
@@ -490,12 +857,12 @@
             var hasDisc = discs.some(function (d) { return (d.classes || []).length; });
             if (hasDisc) {
                 html += '<h3 class="analytics-table-heading">По кожному предмету</h3>';
-                html += '<p class="analytics-chart-hint" style="margin:0.15rem 0 0.6rem">Середнє 1–7 з відповідей по <strong>одному</strong> предмету; <strong>n</strong> — скільки учнів (проходжень) враховано в зведенні по класу.</p>';
+                html += '<p class="analytics-chart-hint" style="margin:0.15rem 0 0.6rem">Середнє 1–7 з відповідей по одному предмету; <strong>n</strong> — к-ть учнів враховано в зведенні по класу.</p>';
                 discs.forEach(function (d) {
                     if (!(d.classes || []).length) return;
                     var title = d.label + ' (' + d.code + ')';
                     html += '<h4 class="analytics-table-tier analytics-per-disc">' + escHtml(title) + '</h4>';
-                    html += '<div class="analytics-table-wrap"><table class="analytics-data-table"><thead><tr><th>Клас</th><th>Парал.</th><th>Середнє (1–7)</th><th>проголосували (n)</th></tr></thead><tbody>';
+                    html += '<div class="analytics-table-wrap"><table class="analytics-data-table"><thead><tr><th>Клас</th><th>Парал.</th><th>Середнє (1–7)</th><th>n</th></tr></thead><tbody>';
                     d.classes.forEach(function (c) {
                         var n = c.response_count != null ? c.response_count : '—';
                         html += '<tr><td data-label="Клас">' + escHtml(c.name) + '</td><td data-label="Парал.">' + escHtml(String(c.grade)) + '</td><td data-label="Сер.">' + (c.avg != null ? c.avg : '—') + '</td><td data-label="n">' + n + '</td></tr>';
@@ -556,22 +923,60 @@
             });
         });
 
+        function syncExportCompareAvailability() {
+            var selA = document.getElementById('schoolSurvey');
+            var selB = document.getElementById('compareB');
+            var radTwo = document.getElementById('exportScopeTwo');
+            var radOne = document.getElementById('exportScopeOne');
+            var lab = document.getElementById('exportScopeTwoLabel');
+            if (!radTwo || !selA || !selB) return;
+            var a = selA.value;
+            var b = selB.value;
+            var ok = !!(a && b && a !== b);
+            radTwo.disabled = !ok;
+            if (lab) lab.style.opacity = ok ? '1' : '0.55';
+            if (!ok && radTwo.checked && radOne) radOne.checked = true;
+        }
+
         async function downloadExport(fmt) {
-            const sid = document.getElementById('schoolSurvey').value;
+            var sid = document.getElementById('schoolSurvey').value;
+            var scopeEl = document.querySelector('input[name="exportSemScope"]:checked');
+            var scope = scopeEl ? scopeEl.value : 'one';
             if (!meUser || !meUser.school_id || !sid) {
                 alert('Оберіть опитування та переконайтесь, що профіль прив\'язаний до школи.');
                 return;
             }
-            const res = await fetch(base + '/api/schools/' + meUser.school_id + '/export?survey_id=' + encodeURIComponent(sid) + '&format=' + fmt, { headers });
+            var fmtLabel = { csv: 'CSV', xlsx: 'Excel (XLSX)', pdf: 'PDF', docx: 'Word (DOCX)' };
+            var fn = (fmtLabel[fmt] || fmt);
+            var url = base + '/api/schools/' + meUser.school_id + '/export?survey_id=' + encodeURIComponent(sid) + '&format=' + fmt;
+            if (scope === 'two') {
+                var sidB = document.getElementById('compareB').value;
+                if (!sidB || sidB === sid) {
+                    alert('Для експорту двох півріч оберіть два різні опитування: у полі «Опитування» та у «Порівняти з другим опитуванням».');
+                    return;
+                }
+                var optA = document.getElementById('schoolSurvey').selectedOptions[0];
+                var optB = document.getElementById('compareB').selectedOptions[0];
+                var nameA = (optA && optA.text) ? optA.text : sid;
+                var nameB = (optB && optB.text) ? optB.text : sidB;
+                var msg = 'Підтверджуєте експорт у форматі ' + fn + ' для двох півріччя?\n\nПерше: ' + nameA + '\nДруге: ' + nameB;
+                if (!window.confirm(msg)) return;
+                url += '&survey_id_b=' + encodeURIComponent(sidB);
+            } else {
+                var o1 = document.getElementById('schoolSurvey').selectedOptions[0];
+                var n1 = (o1 && o1.text) ? o1.text : sid;
+                if (!window.confirm('Підтверджуєте експорт у форматі ' + fn + ' для одного півріччя?\n\nОпитування: ' + n1)) return;
+            }
+            var res = await fetch(url, { headers });
             if (!res.ok) {
                 alert('Помилка експорту');
                 return;
             }
-            const blob = await res.blob();
-            const a = document.createElement('a');
+            var blob = await res.blob();
+            var a = document.createElement('a');
             a.href = URL.createObjectURL(blob);
-            const extMap = { csv: 'csv', xlsx: 'xlsx', pdf: 'pdf', docx: 'docx' };
-            a.download = 'school-stem-export.' + (extMap[fmt] || 'bin');
+            var extMap = { csv: 'csv', xlsx: 'xlsx', pdf: 'pdf', docx: 'docx' };
+            a.download = (scope === 'two' ? 'school-stem-compare-export.' : 'school-stem-export.') + (extMap[fmt] || 'bin');
             a.click();
             URL.revokeObjectURL(a.href);
         }
@@ -579,6 +984,11 @@
         document.getElementById('btnXlsx').addEventListener('click', () => downloadExport('xlsx'));
         document.getElementById('btnPdf').addEventListener('click', () => downloadExport('pdf'));
         document.getElementById('btnDocx').addEventListener('click', () => downloadExport('docx'));
+        ['schoolSurvey', 'compareB'].forEach(function (id) {
+            var _el = document.getElementById(id);
+            if (_el) _el.addEventListener('change', syncExportCompareAvailability);
+        });
+        syncExportCompareAvailability();
 
         function escAttr(s) {
             return String(s ?? '').replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
@@ -690,7 +1100,7 @@
                     html += '<tr data-uid="' + escAttr(u.id) + '"><td style="max-width:14rem;overflow:hidden;text-overflow:ellipsis">' + escAttr(u.email) + '</td>';
                     html += '<td><select class="adm-ur" style="padding:0.35rem">' + opts + '</select></td>';
                     html += '<td><input type="text" class="adm-us" value="' + escAttr(u.school_id || '') + '" placeholder="UUID" style="width:10rem;padding:0.35rem"></td>';
-                    html += '<td><input type="text" class="adm-uss" value="' + escAttr(u.staff_scope || '') + '" placeholder="parallel_a|parallel_b|school" style="width:8rem;padding:0.35rem;font-size:0.8rem"></td>';
+                    html += '<td><input type="text" class="adm-uss" value="' + escAttr(u.staff_scope || '') + '" placeholder="parallel_a|parallel_b|school|support" style="width:9rem;padding:0.35rem;font-size:0.8rem"></td>';
                     html += '<td><button type="button" class="btn btn-outline btn-adm-save-user">Зберегти</button></td></tr>';
                 });
                 html += '</table>';

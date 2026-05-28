@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Реєстрація персоналу — STEM Diagnostic</title>
+    <title>Реєстрація персоналу — STEM. Цифровий діагностичний інструмент</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <header class="header">
         <div class="header-top">
             <div class="container header-inner">
-                <a href="index.html" class="logo" aria-label="STEM Diagnostic"><span class="logo-icon" aria-hidden="true">S</span><span class="logo-word">TEM Diagnostic</span></a>
+                <a href="index.html" class="logo" aria-label="STEM Diagnostic"><span class="logo-stem-letters" aria-hidden="true"><span class="logo-sl logo-sl--s">S</span><span class="logo-sl logo-sl--t">T</span><span class="logo-sl logo-sl--e">E</span><span class="logo-sl logo-sl--m">M</span></span><span class="logo-tail">Diagnostic</span></a>
                 <nav class="nav">
                     <a href="index.html">Головна</a>
                     <a href="register.html" class="stem-auth-register">Реєстрація</a>
@@ -33,20 +33,21 @@
                     <label for="role">Роль *</label>
                     <select id="role" required style="width:100%;padding:0.75rem;border:1px solid var(--border);border-radius:0.5rem">
                         <option value="teacher">Вчитель</option>
-                        <option value="deputy">Завуч</option>
+                        <option value="deputy">Заступник директора</option>
                         <option value="director">Директор</option>
+                        <option value="support">Служба підтримки (огляд аналітики, без експорту)</option>
                     </select>
                 </div>
                 <div class="form-group" id="deputyParallelWrap" style="display:none">
-                    <label for="deputyParallel">Паралель завуча *</label>
+                    <label for="deputyParallel">Паралель заступника *</label>
                     <select id="deputyParallel" style="width:100%;padding:0.75rem;border:1px solid var(--border);border-radius:0.5rem">
                         <option value="A">А (класи А1–А11)</option>
                         <option value="B">Б (класи Б1–Б11)</option>
                     </select>
                 </div>
                 <div class="form-group">
-                    <label for="schoolId">ID школи (UUID, опційно)</label>
-                    <input type="text" id="schoolId" placeholder="a1000000-0000-0000-0000-000000000001">
+                    <label for="schoolId">ID школи UUID <span id="schoolReqMark" style="display:none">*</span></label>
+                    <input type="text" id="schoolId" placeholder="Обов’язково для директора й підтримки" autocomplete="off">
                 </div>
                 <div class="form-group">
                     <label for="fullName">ПІБ</label>
@@ -74,6 +75,18 @@
         if (window.wirePasswordToggle) {
             window.wirePasswordToggle(document.getElementById('toggleStaffPassword'), document.getElementById('password'));
         }
+        const roleEl = document.getElementById('role');
+        const schoolEl = document.getElementById('schoolId');
+        const schoolMark = document.getElementById('schoolReqMark');
+        function syncStaffForm() {
+            const r = roleEl.value;
+            document.getElementById('deputyParallelWrap').style.display = r === 'deputy' ? 'block' : 'none';
+            const needSchool = r === 'director' || r === 'support';
+            schoolEl.required = needSchool;
+            schoolMark.style.display = needSchool ? 'inline' : 'none';
+        }
+        roleEl.addEventListener('change', syncStaffForm);
+        syncStaffForm();
         document.getElementById('staffForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const errEl = document.getElementById('formError');
@@ -86,10 +99,15 @@
                 password: document.getElementById('password').value,
                 full_name: document.getElementById('fullName').value
             };
-            if (sid) body.school_id = sid;
+            if ((body.role === 'director' || body.role === 'support') && !sid) {
+                errEl.textContent = 'Для ролі директора або підтримки вкажіть UUID школи.';
+                errEl.style.display = 'block';
+                return;
+            }
             if (body.role === 'deputy') {
                 body.deputy_parallel = document.getElementById('deputyParallel').value;
             }
+            if (sid) body.school_id = sid;
             let res;
             let data;
             try {

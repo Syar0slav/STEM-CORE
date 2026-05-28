@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Реєстрація — STEM Diagnostic</title>
+    <title>Реєстрація — STEM. Цифровий діагностичний інструмент</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -11,7 +11,7 @@
     <header class="header">
         <div class="header-top">
             <div class="container header-inner">
-                <a href="index.html" class="logo" aria-label="STEM Diagnostic"><span class="logo-icon" aria-hidden="true">S</span><span class="logo-word">TEM Diagnostic</span></a>
+                <a href="index.html" class="logo" aria-label="STEM Diagnostic"><span class="logo-stem-letters" aria-hidden="true"><span class="logo-sl logo-sl--s">S</span><span class="logo-sl logo-sl--t">T</span><span class="logo-sl logo-sl--e">E</span><span class="logo-sl logo-sl--m">M</span></span><span class="logo-tail">Diagnostic</span></a>
                 <nav class="nav">
                     <a href="index.html">Головна</a>
                     <a href="login.html" class="btn btn-ghost stem-auth-login">Увійти</a>
@@ -23,7 +23,7 @@
     <main id="main-content" class="container register-page" style="padding-top: 6rem;">
         <div class="card card--register" id="registerCard">
             <h1 class="page-title">Реєстрація</h1>
-            <p class="register-lead">Створення облікового запису для входу в платформу. Для вчителів, завучів і директорів — <a href="staff-register.html">реєстрація персоналу</a> (потрібен код запрошення).</p>
+            <p class="register-lead">Створення облікового запису для входу в платформу. Для вчителів, заступників директорів передбачено окреме оформлення персоналу з кодом запрошення (деталі в школі або в служби підтримки платформи).</p>
             <div id="registerSuccess" class="form-success" style="display:none" role="status"></div>
             <form id="registerForm">
                 <div class="form-group">
@@ -183,7 +183,7 @@
                             window.location.href = 'student-hub.html';
                             return;
                         }
-                    } catch (e) { /* ignore */ }
+                    } catch (e) {}
                     window.location.href = 'dashboard.html';
                 }
             } catch (err) {

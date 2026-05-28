@@ -1,6 +1,5 @@
 const STEM_API_LS = 'stem_api_base';
 
-/** База URL API без завершального слешу; порожній рядок = той самий origin, що й сторінка. */
 function resolveApiBase() {
     if (typeof window === 'undefined' || !window.location) return '';
     try {
@@ -10,14 +9,14 @@ function resolveApiBase() {
             const normalized = q.replace(/\/$/, '');
             try {
                 localStorage.setItem(STEM_API_LS, normalized);
-            } catch (e) { /* private mode */ }
+            } catch (e) {}
             return normalized;
         }
-    } catch (e) { /* ignore */ }
+    } catch (e) {}
     try {
         const stored = localStorage.getItem(STEM_API_LS);
         if (stored) return stored.replace(/\/$/, '');
-    } catch (e) { /* ignore */ }
+    } catch (e) {}
     const p = window.location.protocol;
     if (p === 'file:' || p === 'null:') {
         return 'http://127.0.0.1:8000';
@@ -28,21 +27,27 @@ function resolveApiBase() {
 const API_BASE = resolveApiBase();
 window.API_BASE = API_BASE;
 
-/** Для TypeError / мережевих збоїв fetch — зрозуміле повідомлення українською */
+window.stemDisplaySchoolName = function stemDisplaySchoolName(name) {
+    if (name == null || name === undefined) return '';
+    return String(name)
+        .replace(/ЗНЗ([\s\u00a0\u202f·]*)?[№#]/gi, 'ЗЗСО №')
+        .replace(/ЗОШ([\s\u00a0\u202f·]*)?[№#]/gi, 'ЗЗСО №');
+};
+
 function isNetworkishError(err) {
     if (!err) return false;
     if (err.name === 'TypeError') return true;
     const m = String(err.message || '');
     return /network|fetch|load failed|failed to fetch/i.test(m);
 }
+
 window.formatFetchError = function formatFetchError(err, fallback) {
     if (isNetworkishError(err)) {
-        return 'Не вдалося з’єднатися з сервером. Запустіть API (uvicorn або docker compose) і відкрийте сайт за http://127.0.0.1:8000/, а не як файл із диска. Якщо фронт на іншому порті — додайте до адреси ?stem_api_base=http://127.0.0.1:8000';
+        return 'Не вдалося з’єднатися з сервером. Перевірте підключення до мережі або зверніться до адміністратора платформи.';
     }
     return fallback != null ? fallback : (err && err.message) ? err.message : 'Сталася помилка';
 };
 
-/** Поширені коди помилок API (англ.) → українська для UI */
 window.API_ERROR_UK = {
     'Invalid credentials': 'Невірний email або пароль',
     'Not authenticated': 'Потрібна авторизація',
@@ -52,6 +57,8 @@ window.API_ERROR_UK = {
     'Invalid or missing invite': 'Невірний або відсутній код запрошення',
     'Only students can access personal recommendations': 'Персональні рекомендації лише для учнів',
     'Insufficient permissions': 'Недостатньо прав',
+    'Teacher profile available only for teaching accounts':
+        'Профіль доступний лише для облікового запису вчителя (після прив’язки до класів)',
     'Survey not found': 'Опитування не знайдено',
     'Already submitted': 'Ви вже надіслали відповіді на це опитування',
     'New password must be at least 8 characters': 'Новий пароль має бути не коротшим за 8 символів',
@@ -84,8 +91,8 @@ window.API_ERROR_UK = {
     'Invalid or expired verification link': 'Посилання недійсне або застаріле',
     'Email verification not configured': 'Підтвердження пошти не налаштовано на сервері',
     'Database schema outdated':
-        'База даних не відповідає коду: застосуйте міграції (у каталозі проєкту: docker compose run --rm api alembic upgrade head або docker compose up --build).',
-    'Database unavailable': 'База даних тимчасово недоступна (перевірте, що контейнер db запущений і DATABASE_URL коректний).',
+        'Сервіс тимчасово недоступний через налаштування бази даних. Зверніться до адміністратора.',
+    'Database unavailable': 'База даних тимчасово недоступна. Спробуйте пізніше або зверніться до адміністратора.',
     'Invalid school_id': 'Вказано некоректний ідентифікатор школи. Залиште поле порожнім або оберіть існуючу школу.',
 };
 
@@ -140,10 +147,10 @@ function messageForHttpError(status, statusText, detailText) {
         if (typeof detailText === 'string' && window.API_ERROR_UK[detailText]) {
             return window.API_ERROR_UK[detailText];
         }
-        return 'Сервіс або база даних тимчасово недоступні. Перевірте docker compose logs api та виконайте alembic upgrade head.';
+        return 'Сервіс тимчасово недоступний. Спробуйте пізніше або зверніться до адміністратора.';
     }
     if (status === 500) {
-        return 'Помилка сервера (500). Найчастіше: база даних недоступна або не застосовані міграції. Перегляньте логи: docker compose logs api';
+        return 'Помилка сервера. Спробуйте пізніше або зверніться до адміністратора.';
     }
     if (status === 422) {
         return 'Некоректні дані (перевірте email і пароль не коротший за 8 символів).';
@@ -165,7 +172,6 @@ function getToken() {
 }
 window.getToken = getToken;
 
-/** Оновлення сесії в інших вкладках (localStorage) + BroadcastChannel у межах origin */
 (function initCrossTabAuth() {
     try {
         const ch = new BroadcastChannel('stem-auth');
@@ -173,16 +179,16 @@ window.getToken = getToken;
             if (ev.data && ev.data.type === 'stem-token' && typeof ev.data.token === 'string') {
                 try {
                     localStorage.setItem(STEM_TOKEN_KEY, ev.data.token);
-                } catch (e) { /* ignore */ }
+                } catch (e) {}
             }
         });
         window.__stemAuthChannel = ch;
-    } catch (e) { /* no BroadcastChannel */ }
+    } catch (e) {}
     window.addEventListener('storage', (e) => {
         if (e.key === STEM_TOKEN_KEY) {
             try {
                 window.dispatchEvent(new CustomEvent('stem-token-changed', { detail: { newValue: e.newValue } }));
-            } catch (err) { /* ignore */ }
+            } catch (err) {}
         }
     });
 })();
@@ -193,7 +199,7 @@ window.setAuthToken = function setAuthToken(token) {
         if (window.__stemAuthChannel) {
             window.__stemAuthChannel.postMessage({ type: 'stem-token', token });
         }
-    } catch (e) { /* private mode */ }
+    } catch (e) {}
 };
 
 window.clearAuthToken = function clearAuthToken() {
@@ -202,10 +208,9 @@ window.clearAuthToken = function clearAuthToken() {
         if (window.__stemAuthChannel) {
             window.__stemAuthChannel.postMessage({ type: 'stem-token', token: '' });
         }
-    } catch (e) { /* ignore */ }
+    } catch (e) {}
 };
 
-/** JSON-запит з токеном; при помилці кидає Error з перекладеним повідомленням */
 async function apiJson(path, options = {}) {
     let res;
     try {
@@ -261,7 +266,6 @@ function apiFetch(path, options = {}) {
     return fetch(API_BASE + path, { ...options, headers });
 }
 
-/** Кнопка «Показати» / «Приховати» для поля пароля */
 function wirePasswordToggle(button, input) {
     if (!button || !input) return;
     function sync() {
@@ -279,10 +283,6 @@ function wirePasswordToggle(button, input) {
 }
 window.wirePasswordToggle = wirePasswordToggle;
 
-/**
- * Сесія зберігається в localStorage між сторінками. Оновлює посилання «Увійти» / «Реєстрація»
- * у шапці та на головній: для авторизованих — «Кабінет» / «Обліковий запис».
- */
 window.stemApplyPublicNavAuth = async function stemApplyPublicNavAuth() {
     const tok = getToken();
     let cabinet = null;
@@ -296,13 +296,15 @@ window.stemApplyPublicNavAuth = async function stemApplyPublicNavAuth() {
             } else if (res.ok) {
                 const u = await res.json();
                 cabinet =
-                    u.account_kind === 'student' ? 'student-hub.html' : 'dashboard.html';
+                    u.account_kind === 'student'
+                        ? 'student-hub.html'
+                        : u.account_kind === 'teacher'
+                          ? 'teacher-hub.html'
+                          : 'dashboard.html';
             } else {
                 cabinet = 'dashboard.html';
             }
-        } catch (e) {
-            /* мережа: залишаємо посилання на вхід, токен не чіпаємо */
-        }
+        } catch (e) {}
     }
 
     document.querySelectorAll('a.stem-auth-login').forEach((a) => {
@@ -338,7 +340,12 @@ window.stemApplyPublicNavAuth = async function stemApplyPublicNavAuth() {
     });
 };
 
-/** Якщо вже є валідна сесія — одразу в кабінет (сторінки login / register). */
+window.stemCabinetHrefForAccountKind = function stemCabinetHrefForAccountKind(kind) {
+    if (kind === 'student') return 'student-hub.html';
+    if (kind === 'teacher') return 'teacher-hub.html';
+    return 'dashboard.html';
+};
+
 window.stemRedirectIfLoggedIn = async function stemRedirectIfLoggedIn() {
     const tok = getToken();
     if (!tok) return;
@@ -353,11 +360,13 @@ window.stemRedirectIfLoggedIn = async function stemRedirectIfLoggedIn() {
         if (!res.ok) return;
         const u = await res.json();
         const href =
-            u.account_kind === 'student' ? 'student-hub.html' : 'dashboard.html';
+            u.account_kind === 'student'
+                ? 'student-hub.html'
+                : u.account_kind === 'teacher'
+                  ? 'teacher-hub.html'
+                  : 'dashboard.html';
         window.location.replace(href);
-    } catch (e) {
-        /* залишити на сторінці входу */
-    }
+    } catch (e) {}
 };
 
 (function initStemPublicAuthUi() {
@@ -380,7 +389,6 @@ window.stemRedirectIfLoggedIn = async function stemRedirectIfLoggedIn() {
     });
 })();
 
-/** Меню в шапці на вузьких екранах (☰) */
 function wireMobileNav() {
     const toggle = document.querySelector('.mobile-toggle');
     const nav = document.querySelector('.header .nav');

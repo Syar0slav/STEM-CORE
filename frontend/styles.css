@@ -74,22 +74,65 @@ body {
 
 .header-inner {
     display: flex;
-    justify-content: space-between;
     align-items: center;
+    flex-wrap: nowrap;
+    gap: clamp(0.75rem, 1.75vw, 1.5rem);
     position: relative;
+    justify-content: flex-start;
+    min-width: 0;
 }
 
 .logo {
-    display: flex;
+    display: inline-flex;
     align-items: center;
     gap: 0.5rem;
     font-weight: 700;
     font-size: 1.25rem;
     color: var(--white);
     text-decoration: none;
+    white-space: nowrap;
+    flex-shrink: 0;
 }
 
-/* Як на макеті: закруглений квадрат, суцільна м’ята, біла S */
+.logo-stem-letters {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 0.04em;
+    font-weight: 800;
+    font-size: clamp(0.95rem, 2.4vw, 1.22rem);
+    letter-spacing: -0.03em;
+    line-height: 1.1;
+}
+
+.logo-sl {
+    display: inline-block;
+    line-height: 1;
+}
+
+.logo-sl--s {
+    color: #22c55e;
+}
+.logo-sl--t {
+    color: #f43f5e;
+}
+.logo-sl--e {
+    color: #f97316;
+}
+.logo-sl--m {
+    color: #3b82f6;
+}
+
+.logo-tail {
+    font-size: clamp(0.95rem, 2.4vw, 1.22rem);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: rgba(255, 255, 255, 0.98);
+}
+
+.footer-brand .logo-tail {
+    color: rgba(255, 255, 255, 0.98);
+}
+
 .logo-icon {
     width: 40px;
     height: 40px;
@@ -105,10 +148,36 @@ body {
     flex-shrink: 0;
 }
 
+.logo-word {
+    font-size: clamp(0.95rem, 2.4vw, 1.25rem);
+    letter-spacing: -0.02em;
+    line-height: 1.2;
+}
+
 .nav {
     display: flex;
     align-items: center;
-    gap: 2rem;
+    gap: clamp(0.65rem, 1.45vw, 1.35rem);
+    flex-wrap: nowrap;
+    flex: 0 0 auto;
+    margin-left: auto;
+    justify-content: flex-end;
+    min-width: min-content;
+}
+
+@media (max-width: 1100px) {
+    .header .nav > a.btn.stem-auth-login,
+    .header .nav > a.btn.stem-auth-register {
+        width: 100%;
+        flex: unset;
+        max-width: none;
+        text-align: center;
+        box-sizing: border-box;
+        justify-content: center;
+        display: flex;
+        text-overflow: clip;
+        overflow: visible;
+    }
 }
 
 .nav a {
@@ -116,6 +185,24 @@ body {
     text-decoration: none;
     font-weight: 500;
     transition: color 0.2s;
+}
+
+.header .nav a:not(.btn) {
+    white-space: nowrap;
+}
+
+.header .nav a.btn {
+    white-space: nowrap;
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1.25;
+    padding: 0.32rem 0.72rem;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    border-radius: 6px;
+    box-sizing: border-box;
 }
 
 .nav a:hover {
@@ -220,6 +307,19 @@ body {
     margin-bottom: 1rem;
 }
 
+.hero-content .hero-lead .hero-grade-range {
+    display: inline-block;
+    font-weight: 700;
+    color: #ffffff;
+    border-bottom: 2px solid var(--accent);
+    padding-bottom: 0.05em;
+}
+
+.hero-badge .hero-grade-range--dense {
+    font-weight: 800;
+    letter-spacing: 0.02em;
+}
+
 .hero-content h1 {
     font-size: 3rem;
     font-weight: 700;
@@ -270,6 +370,13 @@ body {
     max-width: 600px;
     margin: 0 auto;
     color: var(--text-light);
+}
+
+/* Узгоджено з шириною макета аналітики; вирівнювання по ширині для наочності довгих абзаців */
+.section-desc--director-lead {
+    max-width: 900px;
+    text-align: justify;
+    text-justify: inter-word;
 }
 
 .about-section {
@@ -442,6 +549,14 @@ body {
     color: var(--accent);
 }
 
+.stat-item--grade-span .stat-number {
+    display: inline-block;
+    padding: 0 0.2em;
+    border-radius: 10px;
+    background: rgba(0, 212, 170, 0.12);
+    box-shadow: 0 0 0 1px rgba(0, 212, 170, 0.35);
+}
+
 .stat-label {
     font-size: 0.9rem;
     color: rgba(255, 255, 255, 0.8);
@@ -459,6 +574,13 @@ body {
 .method-content p {
     margin-bottom: 1rem;
     color: var(--text);
+}
+
+.method-content .logo-stem-letters {
+    display: inline-flex;
+    vertical-align: middle;
+    margin: 0 0.2rem;
+    flex-wrap: wrap;
 }
 
 .cta-section {
@@ -580,7 +702,6 @@ body {
     font-weight: 600;
 }
 
-/* Індикатор складності пароля (класи на #pwdStrength) */
 .pwd-hint {
     font-size: 0.8125rem;
     color: var(--text-light);
@@ -627,7 +748,6 @@ body {
     box-shadow: 0 0 8px rgba(22, 163, 74, 0.35);
 }
 
-/* Сторінка реєстрації */
 .register-page {
     padding-bottom: 3rem;
 }
@@ -867,6 +987,53 @@ body {
     color: var(--dark);
 }
 
+@media (min-width: 1101px) and (max-width: 1320px) {
+    .nav {
+        gap: 1.15rem;
+    }
+
+    .header .nav a:not(.btn) {
+        font-size: 0.875rem;
+    }
+}
+
+@media (max-width: 1100px) {
+    .header-inner {
+        flex-wrap: nowrap;
+        align-items: center;
+    }
+
+    .nav {
+        display: none;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        flex-direction: column;
+        align-items: stretch;
+        flex-wrap: nowrap;
+        gap: 0.35rem;
+        background: var(--dark);
+        padding: 1rem 1.25rem;
+        z-index: 1001;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+    }
+
+    .nav.open {
+        display: flex;
+    }
+
+    .header .nav a:not(.btn) {
+        white-space: normal;
+    }
+
+    .mobile-toggle {
+        display: block;
+        flex-shrink: 0;
+        margin-left: auto;
+    }
+}
+
 @media (max-width: 1024px) {
     .features-grid {
         grid-template-columns: repeat(2, 1fr);
@@ -877,24 +1044,6 @@ body {
 }
 
 @media (max-width: 768px) {
-    .nav {
-        display: none;
-        position: absolute;
-        top: 100%;
-        left: 0;
-        right: 0;
-        flex-direction: column;
-        background: var(--dark);
-        padding: 1rem;
-    }
-    .nav.open {
-        display: flex;
-        z-index: 1001;
-        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
-    }
-    .mobile-toggle {
-        display: block;
-    }
     .hero-content h1 {
         font-size: 2rem;
     }
@@ -946,7 +1095,6 @@ a:focus-visible {
     -webkit-overflow-scrolling: touch;
 }
 
-/* ——— Панель керування: аналітика та мобільна адаптація ——— */
 .page-dashboard {
     padding-bottom: env(safe-area-inset-bottom, 0);
 }
@@ -979,6 +1127,46 @@ a:focus-visible {
     font-size: 1.05rem;
 }
 
+.analytics-viz-lead {
+    margin-bottom: 1rem;
+    font-size: 0.88rem;
+}
+
+.analytics-tiers-visual {
+    margin-bottom: 1rem;
+}
+
+.analytics-tier-visual-row {
+    display: grid;
+    grid-template-columns: minmax(220px, 300px) minmax(200px, 280px) minmax(0, 1fr);
+    gap: 1rem;
+    align-items: stretch;
+    margin-bottom: 1.5rem;
+}
+
+.analytics-chart-card--tier-donut,
+.analytics-chart-card--tier-bars,
+.analytics-chart-card--tier-radar {
+    min-height: 0;
+}
+
+.analytics-canvas-box--radar {
+    height: 240px;
+}
+
+.analytics-chart-subheading {
+    margin: 0 0 0.5rem;
+    font-size: 0.92rem;
+    font-weight: 600;
+    color: var(--text);
+}
+
+@media (max-width: 900px) {
+    .analytics-tier-visual-row {
+        grid-template-columns: 1fr;
+    }
+}
+
 .analytics-empty-msg {
     margin: 0 0 1rem;
 }
@@ -997,6 +1185,7 @@ a:focus-visible {
     border-radius: 12px;
     padding: 1rem 1rem 1.25rem;
     box-shadow: 0 2px 12px rgba(15, 23, 42, 0.06);
+    overflow: visible;
 }
 
 .analytics-chart-heading {
@@ -1016,6 +1205,7 @@ a:focus-visible {
 .analytics-canvas-box {
     position: relative;
     width: 100%;
+    overflow: visible;
 }
 
 .analytics-canvas-box--donut {
@@ -1107,9 +1297,39 @@ a:focus-visible {
 
 .school-compare-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr));
-    gap: 1.25rem;
-    align-items: start;
+    grid-template-columns: 1fr;
+    gap: 2rem;
+    align-items: stretch;
+}
+
+.school-compare-col {
+    min-width: 0;
+    padding: 1rem 1.25rem 1.35rem;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    background: linear-gradient(180deg, rgba(0, 212, 170, 0.05) 0%, var(--white) 64%);
+    box-shadow: 0 2px 14px rgba(15, 23, 42, 0.06);
+    overflow-x: auto;
+    overflow-y: visible;
+    -webkit-overflow-scrolling: touch;
+}
+
+.school-compare-col .school-analytics-viz {
+    min-width: min(720px, 100%);
+}
+
+.school-compare-col .analytics-tier-visual-row {
+    min-width: 0;
+}
+
+.school-compare-col .analytics-chart-card {
+    min-width: 0;
+}
+
+@media (max-width: 1100px) {
+    .school-compare-col .analytics-tier-visual-row {
+        grid-template-columns: 1fr;
+    }
 }
 
 .school-compare-title {
@@ -1209,11 +1429,32 @@ a:focus-visible {
     }
 }
 
-/* ——— Макет інтерфейсу аналітики для директора (головна) ——— */
-.director-mock-section {
-    background: linear-gradient(180deg, #f1f5f9 0%, var(--white) 32%, #f8fafc 100%);
-    padding-top: 3.5rem;
-    padding-bottom: 3.5rem;
+
+.teacher-hub-demo-director-below {
+    margin-top: 1.75rem;
+    padding-top: 1.35rem;
+    border-top: 1px dashed var(--border);
+    scroll-margin-top: calc(5.25rem + env(safe-area-inset-top, 0px));
+}
+
+.teacher-hub-demo-director-below .director-dashboard-reveal-btn {
+    display: inline-block;
+    width: auto;
+    max-width: none;
+    margin: 0;
+}
+
+.director-demo-collapsible {
+    margin-top: 1rem;
+}
+
+.director-demo-collapsible-header.section-header {
+    text-align: left;
+    padding-top: 0.25rem;
+}
+
+.director-demo-collapsible:not([hidden]) .director-mock-footnote {
+    margin-top: 1rem;
 }
 
 .director-mock-shell {
@@ -1569,6 +1810,30 @@ a:focus-visible {
     white-space: nowrap;
 }
 
+a.director-mock-exp {
+    display: inline-block;
+    text-decoration: none;
+    cursor: pointer;
+    color: var(--text-light);
+}
+
+a.director-mock-exp:hover {
+    border-color: rgba(0, 212, 170, 0.55);
+    color: var(--accent);
+    background: rgba(0, 212, 170, 0.06);
+}
+
+.director-demo-live-wrap {
+    margin-top: 0.35rem;
+    min-width: 0;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+.director-demo-live-wrap .school-analytics-viz {
+    max-width: 100%;
+}
+
 .director-mock-footnote {
     margin-top: 1.25rem;
     text-align: center;
@@ -1611,4 +1876,1078 @@ a:focus-visible {
     .director-mock-table {
         font-size: 0.75rem;
     }
+}
+
+/* Кабінет вчителя */
+.teacher-hub-main {
+    padding-top: max(5.75rem, calc(5rem + env(safe-area-inset-top, 0px)));
+    max-width: 52rem;
+    padding-bottom: 2.5rem;
+}
+
+.teacher-hub-lead {
+    color: var(--text-light);
+    margin-bottom: 1.35rem;
+    line-height: 1.55;
+}
+
+.teacher-hub-h2 {
+    font-size: 1.1rem;
+    margin: 0 0 0.65rem;
+    color: var(--dark);
+}
+
+.teacher-hub-body,
+.teacher-hub-intro {
+    line-height: 1.58;
+}
+
+.teacher-hub-muted {
+    margin-top: 0.5rem;
+    line-height: 1.5;
+}
+
+.teacher-hub-class-grid {
+    display: grid;
+    gap: 1rem;
+    margin-top: 1rem;
+    grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
+}
+
+.teacher-hub-class-card {
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1rem 1.1rem;
+    background: var(--white);
+}
+
+.teacher-hub-class-card h3 {
+    margin: 0 0 0.35rem;
+    font-size: 1.05rem;
+    color: var(--dark);
+}
+
+.teacher-hub-class-actions {
+    margin-top: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.teacher-hub-survey-toolbar {
+    margin: 1rem 0 1.25rem;
+    padding: 1rem 1.05rem;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    background: rgba(226, 232, 240, 0.35);
+}
+
+.teacher-hub-survey-toolbar label {
+    display: block;
+    font-weight: 600;
+    font-size: 0.92rem;
+    margin-bottom: 0.45rem;
+    color: var(--dark);
+}
+
+.teacher-hub-survey-toolbar select {
+    width: 100%;
+    max-width: 100%;
+    padding: 0.6rem 0.75rem;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    font-size: 1rem;
+    background: var(--white);
+}
+
+.teacher-hub-survey-hint {
+    margin-top: 0.55rem;
+    font-size: 0.85rem;
+    color: var(--text-light);
+    line-height: 1.45;
+}
+
+/* Модальне вікно рекомендацій (кабінет вчителя) */
+.teacher-rec-dialog {
+    border: none;
+    border-radius: 16px;
+    padding: 0;
+    max-width: min(38rem, calc(100vw - 1.5rem));
+    width: 100%;
+    max-height: min(88vh, 42rem);
+    box-shadow:
+        0 4px 6px rgba(15, 23, 42, 0.06),
+        0 22px 48px rgba(15, 23, 42, 0.18);
+}
+
+.teacher-rec-dialog::backdrop {
+    background: rgba(10, 14, 39, 0.52);
+    backdrop-filter: blur(3px);
+}
+
+.teacher-rec-dialog-inner {
+    position: relative;
+    padding: 1.35rem 1.35rem 1.2rem;
+    max-height: min(88vh, 42rem);
+    overflow-y: auto;
+}
+
+.teacher-rec-dialog-close {
+    position: absolute;
+    top: 0.55rem;
+    right: 0.55rem;
+    z-index: 1;
+    font-size: 1.65rem;
+    line-height: 1;
+    padding: 0.2rem 0.55rem;
+    border-radius: 8px;
+    min-height: 44px;
+    min-width: 44px;
+}
+
+.teacher-rec-dialog-title {
+    font-size: 1.15rem;
+    margin: 0 2.25rem 0.35rem 0;
+    color: var(--dark);
+    line-height: 1.35;
+}
+
+.teacher-rec-muted {
+    font-size: 0.88rem;
+    color: var(--text-light);
+    margin: 0 0 1rem;
+    line-height: 1.45;
+}
+
+.teacher-rec-loading {
+    padding: 1.25rem 0;
+    color: var(--text-light);
+}
+
+.teacher-rec-error {
+    padding: 0.85rem;
+    border-radius: 10px;
+    background: rgba(220, 38, 38, 0.08);
+    color: var(--error);
+    font-size: 0.92rem;
+}
+
+.teacher-rec-section {
+    margin-bottom: 1.35rem;
+}
+
+.teacher-rec-section:last-of-type {
+    margin-bottom: 1rem;
+}
+
+.teacher-rec-h3 {
+    font-size: 0.82rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--primary-dark);
+    margin: 0 0 0.55rem;
+    font-weight: 700;
+}
+
+.teacher-rec-section-body {
+    font-size: 0.95rem;
+    line-height: 1.62;
+    color: var(--text);
+}
+
+.teacher-rec-section-body p + p {
+    margin-top: 0.65rem;
+}
+
+.teacher-rec-ranking-list {
+    margin: 0.45rem 0 0;
+    padding-left: 1.25rem;
+}
+
+.teacher-rec-intro {
+    margin-bottom: 0.85rem;
+    font-size: 0.93rem;
+    line-height: 1.55;
+}
+
+.teacher-rec-block {
+    padding: 0.85rem 0;
+    border-top: 1px solid var(--border);
+}
+
+.teacher-rec-block:first-of-type {
+    border-top: none;
+    padding-top: 0;
+}
+
+.teacher-rec-title {
+    font-size: 1rem;
+    margin: 0 0 0.45rem;
+    color: var(--dark);
+}
+
+.teacher-rec-hints {
+    margin: 0;
+    padding-left: 1.2rem;
+    line-height: 1.55;
+}
+
+.teacher-rec-hints li + li {
+    margin-top: 0.35rem;
+}
+
+.teacher-rec-note {
+    margin-top: 0.55rem;
+    font-size: 0.88rem;
+    color: var(--text-light);
+    line-height: 1.5;
+}
+
+.teacher-rec-links {
+    margin-top: 0.55rem;
+    font-size: 0.88rem;
+}
+
+.teacher-rec-links a {
+    color: var(--primary-dark);
+    font-weight: 600;
+}
+
+.teacher-rec-footer-actions {
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--border);
+}
+
+/* Графіки кабінету вчителя */
+.teacher-hub-charts-wrap {
+    margin-top: 1.25rem;
+    padding-top: 1.25rem;
+    border-top: 1px solid var(--border);
+}
+
+.teacher-hub-charts-h3 {
+    font-size: 1.05rem;
+    margin: 0 0 0.5rem;
+    color: var(--dark);
+}
+
+.teacher-hub-chart-help {
+    font-size: 0.9rem;
+    line-height: 1.58;
+    color: var(--text);
+    margin: 0 0 0.65rem;
+}
+
+.teacher-hub-chart-help-sub {
+    font-size: 0.84rem;
+    line-height: 1.5;
+    color: var(--text-light);
+    margin: 0 0 0.65rem;
+}
+
+.teacher-hub-chart-status {
+    min-height: 1.35rem;
+    font-size: 0.85rem;
+    color: var(--text-light);
+    margin-bottom: 0.75rem;
+}
+
+.teacher-hub-chart-quiet {
+    font-size: 0.88rem;
+    color: var(--text-light);
+}
+
+.teacher-hub-chart-fieldset {
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 0.85rem 1rem 1rem;
+    margin: 0 0 1rem;
+    background: rgba(248, 250, 252, 0.65);
+}
+
+.teacher-hub-chart-fieldset legend {
+    font-weight: 700;
+    font-size: 0.82rem;
+    padding: 0 0.35rem;
+    color: var(--dark);
+}
+
+.teacher-hub-chart-split {
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: 1fr;
+}
+
+@media (min-width: 900px) {
+    .teacher-hub-chart-split {
+        grid-template-columns: 1.35fr 1fr;
+        align-items: start;
+    }
+}
+
+.teacher-hub-chart-fieldset--grow {
+    min-width: 0;
+}
+
+.teacher-hub-chart-fieldset--donut {
+    min-width: 0;
+}
+
+.teacher-hub-class-check-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.45rem 1rem;
+}
+
+.teacher-hub-class-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 0.9rem;
+    cursor: pointer;
+    user-select: none;
+}
+
+.teacher-hub-axis-toggles {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.45rem 1rem;
+    margin-bottom: 0.65rem;
+}
+
+.teacher-hub-axis-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 0.88rem;
+    cursor: pointer;
+}
+
+.teacher-hub-axis-toggle--specialty {
+    font-weight: 700;
+    color: var(--dark);
+}
+
+.teacher-hub-chart-canvas-bar {
+    position: relative;
+    height: min(320px, 55vw);
+    margin-top: 0.35rem;
+}
+
+.teacher-hub-chart-canvas-donut {
+    position: relative;
+    height: min(260px, 52vw);
+    margin-top: 0.35rem;
+}
+
+.teacher-hub-chart-canvas-bar canvas,
+.teacher-hub-chart-canvas-donut canvas {
+    max-height: 100%;
+}
+
+.teacher-hub-donut-toggles {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    margin-bottom: 0.35rem;
+}
+
+.teacher-hub-donut-toggle {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.45rem;
+    font-size: 0.86rem;
+    line-height: 1.45;
+    cursor: pointer;
+}
+
+.teacher-hub-chart-caption {
+    margin: 0.65rem 0 0;
+    font-size: 0.82rem;
+    color: var(--text-light);
+    line-height: 1.45;
+}
+
+/* Матеріали під індивідуальну програму (кабінет вчителя / демо) */
+.teacher-hub-materials-section {
+    margin-top: 1.35rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--border);
+}
+
+.teacher-hub-materials-title {
+    margin-bottom: 0.35rem;
+}
+
+.teacher-hub-materials-lead {
+    margin: 0 0 0.85rem;
+    font-size: 0.92rem;
+    line-height: 1.55;
+    color: var(--text-muted, var(--text-light));
+}
+
+.teacher-hub-materials-status {
+    margin: 0 0 0.65rem;
+    font-size: 0.85rem;
+    color: var(--text-light);
+}
+
+.teacher-hub-materials-grid {
+    display: grid;
+    gap: 0.95rem;
+    grid-template-columns: 1fr;
+}
+
+.teacher-hub-materials-grid--accordion {
+    display: flex;
+    flex-direction: column;
+    gap: 0.68rem;
+}
+
+@media (min-width: 640px) {
+    .teacher-hub-materials-grid:not(.teacher-hub-materials-grid--accordion) {
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    }
+}
+
+.teacher-hub-material-card {
+    border-radius: var(--radius, 8px);
+    border: 1px solid var(--border);
+    padding: 0.85rem 1rem;
+    background: rgba(249, 250, 252, 0.65);
+}
+
+.teacher-hub-material-head {
+    margin-bottom: 0.65rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px dashed var(--border);
+}
+
+.teacher-hub-material-h4 {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+.teacher-hub-material-body .teacher-hub-material-block:last-child {
+    margin-bottom: 0;
+}
+
+.teacher-hub-material-block {
+    margin: 0 0 1rem;
+}
+
+.teacher-hub-material-h5 {
+    margin: 0 0 0.35rem;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--accent, #2266aa);
+}
+
+.teacher-hub-material-ul {
+    margin: 0;
+    padding-left: 1.15rem;
+    font-size: 0.875rem;
+    line-height: 1.52;
+}
+
+.teacher-hub-material-note {
+    margin: 0.45rem 0 0;
+    font-size: 0.845rem;
+    line-height: 1.52;
+}
+
+.teacher-hub-material-links {
+    margin: 0.45rem 0 0;
+    font-size: 0.85rem;
+}
+
+.teacher-hub-material-folder {
+    border-radius: var(--radius, 8px);
+    border: 1px solid var(--border);
+    background: var(--white);
+}
+
+.teacher-hub-material-folder-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    padding: 0.68rem 0.92rem;
+    background: rgba(249, 250, 252, 0.9);
+}
+
+.teacher-hub-material-folder-title {
+    font-size: 0.94rem;
+    line-height: 1.4;
+}
+
+.teacher-hub-material-folder-btn {
+    flex-shrink: 0;
+    font-size: 0.848rem;
+    padding: 0.35rem 0.95rem;
+    min-height: 2.25rem;
+}
+
+.teacher-hub-material-folder-panel {
+    border-top: 1px dashed var(--border);
+    padding: 0 1rem 1rem;
+    background: var(--white);
+}
+
+.teacher-hub-material-folder-body-inner {
+    padding-top: 0.85rem;
+}
+
+.teacher-hub-material-folder-footer {
+    margin-top: 1rem;
+    padding-top: 0.92rem;
+    border-top: 1px dashed var(--border);
+}
+
+.teacher-hub-material-class-page-link {
+    font-size: 0.848rem;
+    padding: 0.35rem 0.95rem;
+    font-weight: 600;
+}
+
+.teacher-hub-material-card-footer {
+    margin-top: 0.65rem;
+    padding-top: 0.72rem;
+    border-top: 1px dashed var(--border);
+}
+
+.teacher-hub-material-class-page-btn {
+    font-size: 0.848rem;
+    padding: 0.35rem 0.95rem;
+    font-weight: 600;
+}
+
+/* Демо кабінету вчителя на головній */
+.teacher-hub-demo-section {
+    background: linear-gradient(180deg, #f8fafc 0%, #ffffff 100%);
+}
+
+.teacher-hub-demo-shell {
+    border-radius: 14px;
+    border: 1px solid var(--border);
+    overflow: hidden;
+    box-shadow: 0 18px 40px rgba(15, 23, 42, 0.07);
+    background: var(--white);
+    margin-top: 1rem;
+}
+
+.teacher-hub-demo-chrome {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    padding: 0.55rem 0.85rem;
+    background: var(--dark-light);
+    color: rgba(255, 255, 255, 0.92);
+    font-size: 0.82rem;
+}
+
+.teacher-hub-demo-chrome-title {
+    flex: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.teacher-hub-demo-body {
+    padding: 1rem 1.1rem 1.25rem;
+}
+
+.teacher-hub-demo-toolbar-label {
+    display: block;
+    font-weight: 600;
+    font-size: 0.92rem;
+    margin-bottom: 0.45rem;
+    color: var(--dark);
+}
+
+.teacher-hub-demo-footnote {
+    margin-top: 1rem;
+    font-size: 0.88rem;
+    color: var(--text-light);
+    line-height: 1.55;
+}
+
+.page-survey {
+    padding-bottom: env(safe-area-inset-bottom, 0);
+}
+
+.survey-page-main {
+    padding-top: max(5.5rem, calc(4.5rem + env(safe-area-inset-top, 0px)));
+    padding-left: max(1rem, env(safe-area-inset-left, 0px));
+    padding-right: max(1rem, env(safe-area-inset-right, 0px));
+}
+
+.survey-card {
+    max-width: 100%;
+    overflow-x: hidden;
+}
+
+.survey-lead {
+    font-size: clamp(0.88rem, 3vw, 1rem);
+    line-height: 1.55;
+    margin-bottom: 1rem;
+    color: var(--text);
+}
+
+.survey-lead code {
+    font-size: 0.82em;
+    word-break: break-all;
+}
+
+.survey-select {
+    width: 100%;
+    padding: 0.65rem 0.75rem;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-size: 1rem;
+    max-width: 100%;
+    background: var(--white);
+}
+
+.stem-survey-block {
+    margin: 1.35rem 0;
+    padding: 0.85rem 1rem;
+    background: #f8fafc;
+    border-radius: 0.5rem;
+}
+
+.stem-survey-block h3 {
+    margin-bottom: 0.85rem;
+    color: var(--accent);
+    font-size: clamp(1rem, 4vw, 1.15rem);
+    line-height: 1.35;
+}
+
+.stem-survey-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    gap: 0.45rem 0.5rem;
+    margin: 0.5rem 0;
+    padding-bottom: 0.55rem;
+    border-bottom: 1px solid var(--border);
+}
+
+.stem-survey-row:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+.stem-survey-poles {
+    flex: 1 1 100%;
+    font-size: clamp(0.78rem, 3.2vw, 0.92rem);
+    line-height: 1.4;
+    color: var(--text);
+}
+
+.page-survey .stem-survey-scale {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.2rem;
+    align-items: center;
+}
+
+.page-survey .stem-survey-scale input {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+    pointer-events: none;
+}
+
+.page-survey .stem-survey-scale label {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 1.65rem;
+    min-height: 2rem;
+    padding: 0.18rem 0.26rem;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.76rem;
+    font-weight: 600;
+    color: var(--text);
+    transition: background 0.15s, border-color 0.15s, color 0.15s;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.page-survey .stem-survey-scale input:focus-visible + label {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+}
+
+.page-survey .stem-survey-scale input:checked + label {
+    background: var(--accent);
+    color: var(--dark);
+    border-color: var(--accent);
+}
+
+@media (min-width: 520px) {
+    .stem-survey-row {
+        flex-wrap: nowrap;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+    .stem-survey-poles {
+        flex: 1 1 38%;
+        max-width: 18rem;
+    }
+}
+
+@media (max-width: 519px) {
+    .page-survey .stem-survey-scale {
+        justify-content: space-between;
+        width: 100%;
+    }
+
+    .page-survey .stem-survey-scale label {
+        flex: 1 1 calc(14.28% - 0.15rem);
+        min-width: 0;
+        max-width: 2.1rem;
+        font-size: 0.72rem;
+        min-height: 1.85rem;
+    }
+}
+
+@media (max-width: 380px) {
+    .page-survey .stem-survey-scale label {
+        font-size: 0.68rem;
+        padding: 0.15rem 0.18rem;
+    }
+
+    .page-survey .logo-word {
+        font-size: 1.05rem;
+        max-width: 52vw;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+}
+
+.page-account {
+    padding-bottom: env(safe-area-inset-bottom, 0);
+}
+
+.account-page-main {
+    padding-top: max(5.5rem, calc(4.5rem + env(safe-area-inset-top, 0px)));
+    padding-left: max(1rem, env(safe-area-inset-left, 0px));
+    padding-right: max(1rem, env(safe-area-inset-right, 0px));
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+
+.account-director-card {
+    margin: 0;
+}
+
+.account-section-title {
+    font-size: 1.2rem;
+    margin: 0 0 0.5rem;
+    color: var(--dark);
+}
+
+.account-muted {
+    color: var(--text-light);
+    font-size: 0.92rem;
+    line-height: 1.5;
+    margin: 0 0 1rem;
+}
+
+.account-subhead {
+    font-size: 1rem;
+    margin: 0 0 0.35rem;
+    color: var(--accent);
+    font-weight: 600;
+}
+
+.account-badge {
+    font-weight: 600;
+    color: var(--text-light);
+    font-size: 0.9rem;
+}
+
+.account-body-text {
+    margin: 0;
+    font-size: 0.98rem;
+    line-height: 1.5;
+}
+
+.account-director-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
+}
+
+@media (min-width: 720px) {
+    .account-director-grid {
+        grid-template-columns: 1fr 1fr;
+        align-items: start;
+    }
+}
+
+.account-link-list {
+    margin: 0;
+    padding-left: 1.15rem;
+    line-height: 1.65;
+    font-size: 0.95rem;
+}
+
+.account-link-list a {
+    color: var(--accent);
+    word-break: break-all;
+}
+
+.account-plain-email {
+    color: var(--text);
+    word-break: break-all;
+    font-size: 0.93rem;
+    user-select: text;
+}
+
+.account-student-details {
+    margin-top: 1rem;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 0.65rem 0.9rem;
+    background: #f8fafc;
+}
+
+.account-student-details[open] {
+    padding-bottom: 0.85rem;
+}
+
+.account-student-summary {
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 1rem;
+    color: var(--dark);
+    list-style: none;
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+}
+
+.account-student-summary::-webkit-details-marker {
+    display: none;
+}
+
+.account-student-summary::before {
+    content: '';
+    display: inline-block;
+    width: 0.45rem;
+    height: 0.45rem;
+    border-right: 2px solid var(--text-light);
+    border-bottom: 2px solid var(--text-light);
+    transform: rotate(-45deg);
+    margin-right: 0.35rem;
+    transition: transform 0.15s;
+}
+
+.account-student-details[open] .account-student-summary::before {
+    transform: rotate(45deg);
+}
+
+.account-student-list {
+    margin: 0.65rem 0 0;
+    padding-left: 1.15rem;
+    max-height: 18rem;
+    overflow-y: auto;
+    font-size: 0.92rem;
+    line-height: 1.6;
+    -webkit-overflow-scrolling: touch;
+}
+
+.account-student-list a {
+    color: var(--accent);
+    word-break: break-all;
+}
+
+.account-password-card {
+    margin: 0;
+}
+
+.class-model-article {
+    margin-top: 0.25rem;
+}
+.class-model-article-hero {
+    margin-bottom: 1.35rem;
+}
+.class-model-hero-legend {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.65rem 1rem;
+    margin-bottom: 1.35rem;
+}
+.class-model-hero-legend-note {
+    font-size: 0.86rem;
+    color: var(--text-light);
+    font-weight: 500;
+}
+.class-model-stem-sequence {
+    display: inline-flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.45rem;
+}
+.class-model-stem-sequence--hero .stem-disc-badge {
+    min-width: 3rem;
+    height: 3rem;
+    font-size: 1.65rem;
+    border-radius: 14px;
+    box-shadow: 0 4px 14px rgba(15, 23, 42, 0.12);
+}
+.stem-disc-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 2rem;
+    height: 2rem;
+    padding: 0 0.4rem;
+    font-weight: 800;
+    letter-spacing: 0.02em;
+    border-radius: 10px;
+    color: #fff;
+    box-shadow: 0 2px 8px rgba(15, 23, 42, 0.12);
+}
+.stem-disc-badge--S {
+    background: #22c55e;
+}
+.stem-disc-badge--T {
+    background: #f43f5e;
+}
+.stem-disc-badge--E {
+    background: #f97316;
+}
+.stem-disc-badge--M {
+    background: #3b82f6;
+}
+.stem-disc-badge--unknown {
+    background: #64748b;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+.class-model-block-title {
+    font-size: 1.05rem;
+    margin: 1.25rem 0 0.65rem;
+    color: var(--dark);
+}
+.class-model-muted {
+    color: var(--text-light);
+    font-size: 0.92rem;
+}
+.class-model-avg-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(8.5rem, 1fr));
+    gap: 0.65rem;
+    margin-bottom: 1rem;
+}
+.class-model-avg-card {
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 0.65rem 0.75rem;
+    background: linear-gradient(180deg, rgba(0, 212, 170, 0.06) 0%, var(--white) 55%);
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.35rem;
+}
+.class-model-avg-card .stem-disc-badge {
+    min-width: 1.85rem;
+    height: 1.85rem;
+    font-size: 1rem;
+}
+.class-model-avg-val {
+    font-size: 1.35rem;
+    font-weight: 700;
+    line-height: 1.2;
+    color: var(--dark);
+}
+.class-model-avg-name {
+    font-size: 0.78rem;
+    color: var(--text-light);
+    line-height: 1.35;
+    max-width: 6.5rem;
+    overflow-wrap: anywhere;
+}
+
+.class-model-likert-hint {
+    font-size: 0.84rem;
+    color: var(--text-light);
+    margin: -0.15rem 0 0.75rem;
+    line-height: 1.45;
+}
+
+.feature-card p {
+    overflow-wrap: anywhere;
+    hyphens: auto;
+}
+.class-model-ranking-plain {
+    margin: 0 0 0.5rem;
+    line-height: 1.6;
+}
+.class-model-ranking-plain .class-model-stem-sequence .stem-disc-badge {
+    min-width: 2.35rem;
+    height: 2.35rem;
+    font-size: 1.2rem;
+    border-radius: 11px;
+}
+.class-model-k-caption {
+    font-size: 0.88rem;
+    color: var(--text-light);
+    margin: 0 0 0.75rem;
+    line-height: 1.5;
+}
+.class-model-k-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.95rem;
+    margin-bottom: 0.5rem;
+}
+.class-model-k-table th,
+.class-model-k-table td {
+    border: 1px solid var(--border);
+    padding: 0.5rem 0.35rem;
+    text-align: center;
+    vertical-align: middle;
+}
+.class-model-k-table thead th {
+    background: rgba(0, 212, 170, 0.1);
+    font-weight: 600;
+}
+.class-model-k-label {
+    text-align: left !important;
+    font-weight: 600;
+    white-space: nowrap;
+    background: rgba(248, 250, 252, 0.95);
+}
+.class-model-k-cells {
+    display: inline-flex;
+    flex-wrap: wrap;
+    gap: 0.25rem;
+    justify-content: center;
+    align-items: center;
+}
+.class-model-k-table .stem-disc-badge {
+    min-width: 1.9rem;
+    height: 1.9rem;
+    font-size: 1.05rem;
+}
+.class-model-rec-list {
+    padding-left: 1.25rem;
+    margin: 0.5rem 0 0;
+}
+.class-model-rec-list li {
+    margin-bottom: 0.75rem;
 }

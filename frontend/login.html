@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Увійти — STEM Diagnostic</title>
+    <title>Увійти — STEM. Цифровий діагностичний інструмент</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <header class="header">
         <div class="header-top">
             <div class="container header-inner">
-                <a href="index.html" class="logo" aria-label="STEM Diagnostic"><span class="logo-icon" aria-hidden="true">S</span><span class="logo-word">TEM Diagnostic</span></a>
+                <a href="index.html" class="logo" aria-label="STEM Diagnostic"><span class="logo-stem-letters" aria-hidden="true"><span class="logo-sl logo-sl--s">S</span><span class="logo-sl logo-sl--t">T</span><span class="logo-sl logo-sl--e">E</span><span class="logo-sl logo-sl--m">M</span></span><span class="logo-tail">Diagnostic</span></a>
                 <nav class="nav">
                     <a href="index.html">Головна</a>
                     <a href="contact.html">Контакти</a>
@@ -83,7 +83,11 @@
                     window.location.href = 'student-hub.html';
                     return;
                 }
-            } catch (e) { /* fallback dashboard */ }
+                if (mr.ok && mu.account_kind === 'teacher') {
+                    window.location.href = 'teacher-hub.html';
+                    return;
+                }
+            } catch (e) {}
             window.location.href = 'dashboard.html';
         });
     </script>

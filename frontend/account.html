@@ -2,29 +2,48 @@
 <html lang="uk">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Акаунт — STEM Diagnostic</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Акаунт — STEM. Цифровий діагностичний інструмент</title>
     <link rel="stylesheet" href="styles.css">
 </head>
-<body>
+<body class="page-account">
     <header class="header">
         <div class="header-top">
             <div class="container header-inner">
-                <a href="index.html" class="logo" aria-label="STEM Diagnostic"><span class="logo-icon" aria-hidden="true">S</span><span class="logo-word">TEM Diagnostic</span></a>
+                <a href="index.html" class="logo" aria-label="STEM Diagnostic"><span class="logo-stem-letters" aria-hidden="true"><span class="logo-sl logo-sl--s">S</span><span class="logo-sl logo-sl--t">T</span><span class="logo-sl logo-sl--e">E</span><span class="logo-sl logo-sl--m">M</span></span><span class="logo-tail">Diagnostic</span></a>
                 <nav class="nav">
-                    <a href="dashboard.html">Панель</a>
+                    <a href="dashboard.html" id="stemCabinetNav">Мій кабінет</a>
                     <a href="account.html">Акаунт</a>
                     <a href="contact.html">Контакти</a>
                     <a href="#" id="logoutBtn" class="btn btn-ghost">Вийти</a>
                 </nav>
-                <button class="mobile-toggle" aria-label="Меню">☰</button>
+                <button type="button" class="mobile-toggle" aria-label="Меню">☰</button>
             </div>
         </div>
     </header>
-    <main class="container" style="padding-top: 6rem;">
-        <div class="card">
+    <main class="container account-page-main">
+        <section id="directorSection" class="card account-director-card" hidden>
+            <h2 class="account-section-title">Інформація для директора</h2>
+            <div class="account-director-grid">
+                <div>
+                    <h3 class="account-subhead">Заклад</h3>
+                    <p id="dirSchoolLine" class="account-body-text"></p>
+                </div>
+                <div>
+                    <h3 class="account-subhead">Заступники директора <span id="dirDeputyCount" class="account-badge"></span></h3>
+                    <ul id="dirDeputies" class="account-link-list"></ul>
+                    <p id="dirDeputiesEmpty" class="account-muted" hidden>Заступників директора за даними системи не знайдено.</p>
+                </div>
+            </div>
+            <details class="account-student-details">
+                <summary id="stuSummary" class="account-student-summary">Учні</summary>
+                <ul id="stuList" class="account-student-list"></ul>
+                <p id="stuEmpty" class="account-muted" hidden>Учнів, доданих до класів цієї школи, поки немає.</p>
+            </details>
+        </section>
+
+        <div class="card account-password-card">
             <h1 class="page-title">Зміна пароля</h1>
-            <p style="margin-bottom:1rem;color:var(--text-light)">Пароль для входу в STEM Diagnostic (не плутати з паролем PostgreSQL).</p>
             <form id="pwdForm">
                 <div class="form-group">
                     <label for="current">Поточний пароль</label>
@@ -46,14 +65,106 @@
     </main>
     <script src="app.js"></script>
     <script>
+        function stemEsc(s) {
+            if (s == null || s === undefined) return '';
+            return String(s)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/"/g, '&quot;');
+        }
+
         const token = localStorage.getItem('token');
         if (!token) window.location.href = 'login.html';
+
         document.getElementById('logoutBtn').addEventListener('click', (e) => {
             e.preventDefault();
             if (window.clearAuthToken) window.clearAuthToken();
             else localStorage.removeItem('token');
             window.location.href = 'index.html';
         });
+
+        (async function loadDirectorBlock() {
+            const base = window.API_BASE || '';
+            const hdr = { Authorization: 'Bearer ' + token };
+            let me;
+            try {
+                const r = await fetch(base + '/api/me', { headers: hdr });
+                if (!r.ok) return;
+                me = await r.json();
+            } catch (e) {
+                return;
+            }
+            if (me.account_kind !== 'director' || !me.school_id) return;
+
+            const sec = document.getElementById('directorSection');
+            sec.hidden = false;
+
+            let data;
+            try {
+                const r = await fetch(base + '/api/schools/' + encodeURIComponent(me.school_id) + '/directory', {
+                    headers: hdr,
+                });
+                if (!r.ok) return;
+                data = await r.json();
+            } catch (e) {
+                return;
+            }
+
+            const city = data.school_city ? ' · ' + data.school_city : '';
+            const schoolShown = stemEsc(
+                window.stemDisplaySchoolName ? window.stemDisplaySchoolName(data.school_name) : data.school_name || ''
+            );
+            document.getElementById('dirSchoolLine').innerHTML =
+                '<strong>' + schoolShown + '</strong>' + stemEsc(city);
+
+            document.getElementById('dirDeputyCount').textContent = '(' + data.deputy_count + ')';
+
+            const depUl = document.getElementById('dirDeputies');
+            const depEmpty = document.getElementById('dirDeputiesEmpty');
+            depUl.innerHTML = '';
+            if (data.deputies && data.deputies.length) {
+                depEmpty.hidden = true;
+                data.deputies.forEach(function (d) {
+                    const li = document.createElement('li');
+                    const label = (d.full_name ? stemEsc(d.full_name) + ' · ' : '') + stemEsc(d.parallel_label);
+                    li.innerHTML = label + ' — <span class="account-plain-email">' + stemEsc(d.email) + '</span>';
+                    depUl.appendChild(li);
+                });
+            } else {
+                depEmpty.hidden = false;
+            }
+
+            const summaryEl = document.getElementById('stuSummary');
+            summaryEl.textContent = 'Учні (' + data.student_count + ')';
+            const stUl = document.getElementById('stuList');
+            const stEmpty = document.getElementById('stuEmpty');
+            stUl.innerHTML = '';
+            if (data.students && data.students.length) {
+                stEmpty.hidden = true;
+                data.students.forEach(function (s) {
+                    const li = document.createElement('li');
+                    const namePart = s.full_name ? stemEsc(s.full_name) + ' — ' : '';
+                    li.innerHTML = namePart + '<span class="account-plain-email">' + stemEsc(s.email) + '</span>';
+                    stUl.appendChild(li);
+                });
+            } else {
+                stEmpty.hidden = false;
+            }
+        })();
+
+        (async function stemAccountNavCabinetLink() {
+            const el = document.getElementById('stemCabinetNav');
+            if (!el || !window.stemCabinetHrefForAccountKind) return;
+            try {
+                const r = await fetch((window.API_BASE || '') + '/api/me', {
+                    headers: { Authorization: 'Bearer ' + token },
+                });
+                if (!r.ok) return;
+                const mu = await r.json();
+                el.setAttribute('href', window.stemCabinetHrefForAccountKind(mu.account_kind || ''));
+            } catch (e) {}
+        })();
+
         document.getElementById('pwdForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const n1 = document.getElementById('new1').value;
@@ -72,11 +183,11 @@
             try {
                 res = await fetch((window.API_BASE || '') + '/api/auth/change-password', {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+                    headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + token },
                     body: JSON.stringify({
                         current_password: document.getElementById('current').value,
-                        new_password: n1
-                    })
+                        new_password: n1,
+                    }),
                 });
                 data = await res.json().catch(() => ({}));
             } catch (err) {
@@ -93,6 +204,10 @@
             document.getElementById('pwdForm').reset();
         });
     </script>
-    <script>document.querySelector('.mobile-toggle')?.addEventListener('click',()=>document.querySelector('.nav').classList.toggle('open'));</script>
+    <script>
+        document.querySelector('.mobile-toggle')?.addEventListener('click', () =>
+            document.querySelector('.nav').classList.toggle('open')
+        );
+    </script>
 </body>
 </html>

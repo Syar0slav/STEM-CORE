@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>STEM. Шкільний діагностичний інструмент</title>
+    <meta name="description" content="STEM Diagnostic — діагностика зацікавленості учнів 5–12 класів у STEM. Опитування, модель класу S/T/E/M, аналітика для школи.">
+    <title>STEM. Цифровий діагностичний інструмент</title>
     <link rel="stylesheet" href="styles.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -15,13 +16,14 @@
         <div class="header-top">
             <div class="container header-inner">
                 <a href="index.html" class="logo" aria-label="STEM Diagnostic">
-                    <span class="logo-icon" aria-hidden="true">S</span>
-                    <span class="logo-word">TEM Diagnostic</span>
+                    <span class="logo-stem-letters" aria-hidden="true"><span class="logo-sl logo-sl--s">S</span><span class="logo-sl logo-sl--t">T</span><span class="logo-sl logo-sl--e">E</span><span class="logo-sl logo-sl--m">M</span></span>
+                    <span class="logo-tail">Diagnostic</span>
                 </a>
                 <nav class="nav">
                     <a href="#about">Про проєкт</a>
                     <a href="#features">Можливості</a>
-                    <a href="#director-dashboard">Аналітика директора</a>
+                    <a href="#director-dashboard">Шкільна аналітика</a>
+                    <a href="#teacher-hub-demo">Кабінет вчителя</a>
                     <a href="#survey-demo">Опитування</a>
                     <a href="contact.html">Контакти</a>
                     <a href="login.html" class="btn btn-ghost stem-auth-login">Увійти</a>
@@ -38,10 +40,10 @@
             <div class="hero-overlay"></div>
         </div>
         <div class="container hero-content">
-            <span class="hero-badge">Діагностика зацікавленості учнів</span>
-            <h1>STEM. Шкільний діагностичний інструмент</h1>
-            <p>Цифрова платформа для визначення зацікавленості учнів 5–9 класів у вивченні STEM-дисциплін на основі моделі класу та методичних рекомендацій для педагогів</p>
-                <div class="hero-actions">
+            <span class="hero-badge">Діагностика зацікавленості учнів <span class="hero-grade-range hero-grade-range--dense">5–12</span> класів</span>
+            <h1>STEM. Цифровий діагностичний інструмент</h1>
+            <p class="hero-lead">Цифрова платформа для визначення зацікавленості учнів <span class="hero-grade-range" title="Охоплення: від 5-го до 12-го класу">5–12 класів</span> у вивченні STEM-дисциплін на основі моделі класу та методичних рекомендацій для педагогів (шкільний модуль також відомий як STEM Diagnostic).</p>
+            <div class="hero-actions">
                 <a href="register.html" class="btn btn-accent btn-lg stem-auth-register">Реєстрація</a>
                 <a href="survey.html" class="btn btn-outline-light btn-lg">Пройти опитування</a>
             </div>
@@ -59,10 +61,9 @@
                     <img src="https://images.unsplash.com/photo-1503676260728-1c00da094a0b?w=600&q=80" alt="STEM навчання">
                 </div>
                 <div class="about-text">
-                    <p>У статті описано підхід для підвищення зацікавленості учнів до вивчення STEM-дисциплін відповідно до запиту школярів. Авторами запропоновано модель класу, яку було застосовано під час дослідження, для допомоги у діагностиці зацікавленості учнів 5–9 класів вивчати STEM-дисципліни.</p>
-                    <p>У результаті дослідження запропоновано реалізувати ідею підтримки педагогів на основі моделі класу із методичними рекомендаціями за допомогою системи «СТЕМ. Шкільний діагностичний інструмент».</p>
-                    <p><strong>Ключові слова:</strong> STEM-дисципліни, зацікавленість у STEM, STEM освіта, «STEM. Шкільний діагностичний інструмент»</p>
-                    <p>Цифрові діагностичні інструменти для вивчення STEM-дисциплін є дієвими для планування навчального процесу. На сьогодні школи все більше роблять акцент на вивченні STEM-дисциплін.</p>
+                    <p>У веб-застосунку реалізовано підхід до діагностики зацікавленості учнів у STEM-дисциплінах. Запропоновано авторську розробку «модель класу», яка будується індивідуально для закладу загальної середньої освіти за результатом опитування школярів. Даний інструмент допомагає керівництву й учителям запланувати, за запитами учнів, вивчення STEM-предметів.</p>
+                    <p>Для середньої та старшої школи платформа вираховує зведені показники по класах, ранжування дисциплін і підказки щодо подальших кроків.</p>
+                    <p>STEM Diagnostic — це платформа, яка допомагає школі реалізовувати STEM-підхід до навчання з урахуванням зацікавленості учнів; надає рекомендації вчителям щодо подальших кроків для підтримки та/або підсилення зацікавленості учнів до майбутньої кар'єри у STEM.</p>
                 </div>
             </div>
         </div>
@@ -80,7 +81,7 @@
                         <img src="https://images.unsplash.com/photo-1532094349884-543bc11b234d?w=200&q=80" alt="">
                     </div>
                     <h3>STEM Semantics Survey</h3>
-                    <p>Українськомовний опитувальник для оцінки ставлення учнів до науки, математики, інженерії та технологій. Шкала Лікерта 1–7.</p>
+                    <p>Українськомовний опитувальник для оцінки ставлення учнів до науки, математики, інженерії та технологій.</p>
                 </div>
                 <div class="feature-card">
                     <div class="feature-icon">
@@ -94,125 +95,153 @@
                         <img src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=200&q=80" alt="">
                     </div>
                     <h3>Методичні рекомендації</h3>
-                    <p>Персоналізовані рекомендації для педагогів щодо підвищення зацікавленості учнів у дисциплінах на III та IV місцях.</p>
+                    <p>Персоналізовані рекомендації для педагогів щодо підвищення зацікавленості учнів у STEM.</p>
                 </div>
                 <div class="feature-card">
                     <div class="feature-icon">
                         <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=200&q=80" alt="">
                     </div>
                     <h3>Аналітика для керівництва</h3>
-                    <p>Зведені звіти для завучів та директорів. Порівняльний аналіз між класами та школами.</p>
+                    <p>Розроблені звіти для директора школи та заступника. Розроблений порівняльний аналіз між класами у середній та старшій школі.</p>
                 </div>
             </div>
         </div>
     </section>
 
-    <section id="director-dashboard" class="section director-mock-section" aria-labelledby="director-mock-title">
+    <section id="teacher-hub-demo" class="section teacher-hub-demo-section" aria-labelledby="teacher-hub-demo-title">
         <div class="container">
             <div class="section-header">
-                <span class="section-badge">Керівництво школи</span>
-                <h2 id="director-mock-title">Інтерфейс аналітики для директора</h2>
-                <p class="section-desc">У кабінеті після входу доступні ті самі екрани: вибір опитування, діаграми дисциплін S/T/E/M, порівняння класів і експорт звітів. Нижче — <strong>статичний макет</strong> реалізованого інтерфейсу (без живих даних).</p>
+                <span class="section-badge">Викладач</span>
+                <h2 id="teacher-hub-demo-title">Кабінет вчителя та графіки по класах</h2>
+                <p class="section-desc">
+                    Приклад екрану кабінету вчителя з умовними даними. У робочому акаунті підставляються реальні результати опитування.
+                </p>
             </div>
 
-            <div class="director-mock-shell" role="img" aria-label="Приклад вікна панелі керування з блоком аналітики школи">
-                <div class="director-mock-chrome">
+            <div class="teacher-hub-demo-shell" role="region" aria-label="Демо кабінету вчителя">
+                <div class="teacher-hub-demo-chrome">
                     <span class="director-mock-dots" aria-hidden="true"><i></i><i></i><i></i></span>
-                    <span class="director-mock-chrome-title">Панель керування · аналітика школи</span>
+                    <span class="teacher-hub-demo-chrome-title">Кабінет вчителя · STEM Diagnostic (демо)</span>
                 </div>
-                <div class="director-mock-body">
-                    <div class="director-mock-card">
-                        <div class="director-mock-card-head">
-                            <span class="director-mock-badge">Директор / завуч</span>
-                            <h3 class="director-mock-h3">Аналітика школи</h3>
-                        </div>
-                        <div class="director-mock-form">
-                            <label class="director-mock-label">Опитування</label>
-                            <div class="director-mock-select" aria-hidden="true">STEM Semantics Survey — І півріччя 2025-2026</div>
-                            <div class="director-mock-actions">
-                                <span class="director-mock-btn director-mock-btn--primary">Показати зведення по класах</span>
-                                <span class="director-mock-btn director-mock-btn--ghost">Порівняти півріччя</span>
-                            </div>
+                <div class="teacher-hub-demo-body">
+                    <div class="card teacher-hub-stem-card" style="margin-bottom: 1rem">
+                        <h3 class="teacher-hub-charts-h3">Ваша STEM-лінія (демо)</h3>
+                        <p class="teacher-hub-body"><strong>Математика (M)</strong></p>
+                    </div>
+
+                    <div class="teacher-hub-survey-toolbar">
+                        <span class="teacher-hub-demo-toolbar-label">Опитування</span>
+                        <div class="director-mock-select" aria-hidden="true">STEM Semantics Survey — І півріччя</div>
+                    </div>
+
+                    <div class="teacher-hub-charts-wrap" aria-labelledby="demoTeacherChartsHeading">
+                        <h3 id="demoTeacherChartsHeading" class="teacher-hub-charts-h3">Графіки по ваших класах</h3>
+                        <p id="demoTeacherChartStatus" class="teacher-hub-chart-status" aria-live="polite"></p>
+
+                        <fieldset class="teacher-hub-chart-fieldset">
+                            <legend>Класи</legend>
+                            <div id="demoTeacherClassIncludeList" class="teacher-hub-class-check-grid"></div>
+                        </fieldset>
+
+                        <div class="teacher-hub-chart-split">
+                            <fieldset class="teacher-hub-chart-fieldset teacher-hub-chart-fieldset--grow">
+                                <legend>Середній бал по вашій лінії</legend>
+                                <div class="teacher-hub-chart-canvas-bar">
+                                    <canvas id="demoTeacherStemBarCanvas" aria-label="Середній бал по класах"></canvas>
+                                </div>
+                            </fieldset>
+
+                            <fieldset class="teacher-hub-chart-fieldset teacher-hub-chart-fieldset--donut">
+                                <legend>Розподіл за порогом 6 балів</legend>
+                                <div class="teacher-hub-donut-toggles">
+                                    <label class="teacher-hub-donut-toggle">
+                                        <input type="checkbox" id="demoTeacherDonutSalad" checked />
+                                        Класи з зацікавленням
+                                    </label>
+                                    <label class="teacher-hub-donut-toggle">
+                                        <input type="checkbox" id="demoTeacherDonutBlue" checked />
+                                        Класи з необхідним доопрацюванням
+                                    </label>
+                                </div>
+                                <div class="teacher-hub-chart-canvas-donut">
+                                    <canvas id="demoTeacherDonutCanvas" aria-label="Розподіл класів за балом"></canvas>
+                                </div>
+                                <p id="demoTeacherDonutCaption" class="teacher-hub-chart-caption"></p>
+                            </fieldset>
                         </div>
 
-                        <div class="director-mock-viz-grid">
-                            <div class="director-mock-viz-block">
-                                <h4 class="director-mock-viz-title">Частки дисциплін (S / T / E / M)</h4>
-                                <div class="director-mock-donut-wrap">
-                                    <div class="director-mock-donut" aria-hidden="true"></div>
-                                    <ul class="director-mock-legend">
-                                        <li><span class="dm-l swatch-s"></span> Наука (S)</li>
-                                        <li><span class="dm-l swatch-t"></span> Технології (T)</li>
-                                        <li><span class="dm-l swatch-e"></span> Інженерія (E)</li>
-                                        <li><span class="dm-l swatch-m"></span> Математика (M)</li>
-                                    </ul>
-                                </div>
-                            </div>
-                            <div class="director-mock-viz-block director-mock-viz-block--wide">
-                                <h4 class="director-mock-viz-title">Класи: середні S · T · E · M (шкала 1–7)</h4>
-                                <div class="director-mock-bars" aria-hidden="true">
-                                    <div class="director-mock-bar-row">
-                                        <span class="director-mock-class">1-А</span>
-                                        <div class="director-mock-bar-track">
-                                            <div class="dm-col"><i class="b s" style="height:72%"></i></div>
-                                            <div class="dm-col"><i class="b t" style="height:58%"></i></div>
-                                            <div class="dm-col"><i class="b e" style="height:65%"></i></div>
-                                            <div class="dm-col"><i class="b m" style="height:80%"></i></div>
-                                        </div>
-                                    </div>
-                                    <div class="director-mock-bar-row">
-                                        <span class="director-mock-class">1-Б</span>
-                                        <div class="director-mock-bar-track">
-                                            <div class="dm-col"><i class="b s" style="height:68%"></i></div>
-                                            <div class="dm-col"><i class="b t" style="height:62%"></i></div>
-                                            <div class="dm-col"><i class="b e" style="height:70%"></i></div>
-                                            <div class="dm-col"><i class="b m" style="height:55%"></i></div>
-                                        </div>
-                                    </div>
-                                    <div class="director-mock-bar-row">
-                                        <span class="director-mock-class">2-А</span>
-                                        <div class="director-mock-bar-track">
-                                            <div class="dm-col"><i class="b s" style="height:75%"></i></div>
-                                            <div class="dm-col"><i class="b t" style="height:70%"></i></div>
-                                            <div class="dm-col"><i class="b e" style="height:58%"></i></div>
-                                            <div class="dm-col"><i class="b m" style="height:72%"></i></div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="director-mock-bar-keys">
-                                    <span><i class="k s"></i> S</span>
-                                    <span><i class="k t"></i> T</span>
-                                    <span><i class="k e"></i> E</span>
-                                    <span><i class="k m"></i> M</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="director-mock-table-wrap">
-                            <table class="director-mock-table">
-                                <thead>
-                                    <tr><th>Клас</th><th>S</th><th>T</th><th>E</th><th>M</th><th>Ранг</th></tr>
-                                </thead>
-                                <tbody>
-                                    <tr><td>1-А</td><td>5.2</td><td>4.1</td><td>4.5</td><td>5.8</td><td>M-S-E-T</td></tr>
-                                    <tr><td>1-Б</td><td>4.9</td><td>4.4</td><td>4.8</td><td>4.2</td><td>S-E-T-M</td></tr>
-                                    <tr><td>2-А</td><td>5.1</td><td>4.9</td><td>4.0</td><td>5.0</td><td>S-M-T-E</td></tr>
-                                </tbody>
-                            </table>
-                        </div>
-
-                        <p class="director-mock-export-label" id="director-mock-export-label">Експорт результатів (як на панелі керування)</p>
-                        <div class="director-mock-exports" role="group" aria-labelledby="director-mock-export-label">
-                            <span class="director-mock-exp">Експорт CSV</span>
-                            <span class="director-mock-exp">Експорт Excel</span>
-                            <span class="director-mock-exp">Експорт PDF</span>
-                            <span class="director-mock-exp">Експорт Word (DOCX)</span>
+                        <div class="teacher-hub-materials-section" aria-labelledby="demoTeacherMaterialsHeading">
+                            <h3 id="demoTeacherMaterialsHeading" class="teacher-hub-charts-h3 teacher-hub-materials-title">
+                                Розбір матеріалів під індивідуальну програму
+                            </h3>
+                            <p class="teacher-hub-materials-lead">
+                                План роботи узгоджений із вашою STEM-лінією (математика у прикладі). Оберіть класи в списку вище — далі для кожного є згорнутий блок: натисніть «Розгорнути план», щоб побачити кроки. Знову «Згорнути», коли огляду достатньо.
+                            </p>
+                            <p id="demoTeacherMaterialsStatus" class="teacher-hub-materials-status" aria-live="polite"></p>
+                            <div id="demoTeacherMaterialsGrid" class="teacher-hub-materials-grid teacher-hub-materials-grid--accordion"></div>
                         </div>
                     </div>
+
+                    <p class="teacher-hub-demo-footnote">
+                        Повний кабінет після <a href="login.html" class="stem-auth-login">входу</a>: <a href="teacher-hub.html">Кабінет вчителя</a>.
+                    </p>
                 </div>
             </div>
 
-            <p class="director-mock-footnote">Повна інтерактивна версія з вашими даними — у <a href="login.html" class="stem-auth-login">кабінеті</a> на сторінці «Панель керування» після входу обліковим записом директора або завуча.</p>
+            <div id="director-dashboard" class="teacher-hub-demo-director-below">
+                <button
+                    type="button"
+                    class="btn btn-outline director-dashboard-reveal-btn"
+                    id="directorDemoToggle"
+                    aria-expanded="false"
+                    aria-controls="directorDemoCollapsible"
+                >
+                    Демо для директора
+                </button>
+
+                <div id="directorDemoCollapsible" class="director-demo-collapsible" hidden>
+                    <div class="section-header director-demo-collapsible-header">
+                        <span class="section-badge">Керівництво школи</span>
+                        <h2 id="director-mock-title">Шкільна аналітика</h2>
+                        <p class="section-desc section-desc--director-lead">Представлено візуалізований аналіз опитування: по класах, окремо для середньої (5–9 клас) та старшої школи (10–12 класи). Аналітику щодо зацікавленості учнів у вивченні STEM-дисциплін подано у вигляді таблиць та графічних діаграм. Результати опитування візуалізовано за результатами опитування проведеними у І та ІІ півріччях та показано їх порівняльний аналіз. Системою пропонується перегляд даних за різними роками.<br /><br />Нижче подано приклад аналітики умовного закладу загальної середньої освіти №&nbsp;204.</p>
+                    </div>
+
+                    <div class="director-mock-shell" role="region" aria-label="Шкільна аналітика та зведення по класах">
+                        <div class="director-mock-chrome">
+                            <span class="director-mock-dots" aria-hidden="true"><i></i><i></i><i></i></span>
+                            <span class="director-mock-chrome-title">Панель керування · аналітика школи</span>
+                        </div>
+                        <div class="director-mock-body">
+                            <div class="director-mock-card">
+                                <div class="director-mock-card-head">
+                                    <span class="director-mock-badge">Директор/заступник директора</span>
+                                    <h3 class="director-mock-h3">Аналітика школи</h3>
+                                </div>
+                                <div class="director-mock-form">
+                                    <label class="director-mock-label">Опитування</label>
+                                    <div class="director-mock-select" aria-hidden="true">STEM Semantics Survey — І півріччя (приклад для ЗЗСО №204)</div>
+                                    <div class="director-mock-actions">
+                                        <span class="director-mock-btn director-mock-btn--primary">Показати зведення по класах</span>
+                                        <span class="director-mock-btn director-mock-btn--ghost">Порівняти півріччя</span>
+                                    </div>
+                                </div>
+
+                                <div class="director-demo-live-wrap" id="directorDemoVizMount" aria-live="polite"></div>
+
+                                <p class="director-mock-export-label" id="director-mock-export-label">Експорт результатів (у кабінеті після входу)</p>
+                                <div class="director-mock-exports" role="group" aria-labelledby="director-mock-export-label">
+                                    <a class="director-mock-exp" href="login.html">Експорт CSV</a>
+                                    <a class="director-mock-exp" href="login.html">Експорт Excel</a>
+                                    <a class="director-mock-exp" href="login.html">Експорт PDF</a>
+                                    <a class="director-mock-exp" href="login.html">Експорт Word (DOCX)</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <p class="director-mock-footnote">Повна версія з даними вашого закладу відкривається після входу в систему (меню «Кабінет» / «Увійти») для директора або заступника директора.</p>
+                </div>
+            </div>
         </div>
     </section>
 
@@ -221,13 +250,13 @@
             <div class="section-header">
                 <span class="section-badge">Опитування</span>
                 <h2>STEM Semantics Survey</h2>
-                <p class="section-desc">У проєкті використовується загальноприйнята методика семантичного диференціала: п’ять блоків по п’ять пар понять, оцінка по шкалі від 1 до 7. Конкретні формулювання на головній сторінці не показуємо — вони задаються офіційним набором питань після імпорту в <strong>Moodle</strong> (файл <code>moodle/stem_semantics_survey.xml</code> у репозиторії).</p>
+                <p class="section-desc">Опитування складається з 5 запитань, які містять 5 пар понять. Відповіді на кожне запитання подано у шкалі Лікерта (від 0 до 7 пунктів). Для проходження тесту відкрийте опитування в застосунку або через кабінет після реєстрації.</p>
             </div>
             <div class="survey-demo-card">
                 <div class="survey-demo-body" style="padding:1.25rem">
-                    <p style="margin:0 0 1rem;line-height:1.6"><strong>Типовий сценарій для школи:</strong> учні проходять опитування в курсі Moodle; викладач експортує відповіді (CSV), після чого їх можна імпортувати в STEM Diagnostic для моделі класу та аналітики — див. <code>moodle/IMPORT_INSTRUCTIONS.md</code>.</p>
-                    <p style="margin:0 0 1rem;line-height:1.6;color:var(--text-light)">Зв’язок із застосунком: облікові записи користувачів і відповіді в БД — у STEM Diagnostic; Moodle лише збирає відповіді в зручному для закладу вигляді, якщо ви обрали цей шлях.</p>
-                    <p style="margin:0 0 1rem;line-height:1.6">Якщо Moodle не використовується, після <a href="register.html" class="stem-auth-inline" data-stem-text-out="реєстрації" data-stem-text-in="обліковому запису">реєстрації</a> та входу опитування можна пройти безпосередньо тут.</p>
+                    <p style="margin:0 0 1rem;line-height:1.6">Учень проходить опитування безпосередньо на платформі. Відповіді одразу враховуються в моделі класу й зведеннях для школи.</p>
+                    <p style="margin:0 0 1rem;line-height:1.6;color:var(--text-light)">Якщо заклад уже зібрав відповіді в іншій системі, їх можна імпортувати в STEM Diagnostic через кабінет керування — школа налаштовує процес окремо.</p>
+                    <p style="margin:0 0 1rem;line-height:1.6">Як почати без додаткових кроків: зареєструватись або увійти й відкрити опитування нижче.</p>
                     <a href="survey.html" class="btn btn-accent">Відкрити опитування в застосунку</a>
                     <a href="login.html" class="btn btn-outline stem-auth-login" style="margin-left:0.5rem">Увійти</a>
                 </div>
@@ -240,14 +269,14 @@
             <div class="stats-grid">
                 <div class="stat-item">
                     <span class="stat-number">5</span>
-                    <span class="stat-label">блоків опитування</span>
+                    <span class="stat-label">запитань</span>
                 </div>
                 <div class="stat-item">
-                    <span class="stat-number">25</span>
-                    <span class="stat-label">питань</span>
+                    <span class="stat-number">5</span>
+                    <span class="stat-label">пар понять</span>
                 </div>
-                <div class="stat-item">
-                    <span class="stat-number">5–9</span>
+                <div class="stat-item stat-item--grade-span" title="Від 5-го до 12-го класу">
+                    <span class="stat-number">5–12</span>
                     <span class="stat-label">класи</span>
                 </div>
                 <div class="stat-item">
@@ -265,8 +294,9 @@
                 <h2>Як працює модель класу</h2>
             </div>
             <div class="method-content">
-                <p>За середнім значенням поставлено у ранкінг систему значення кожної дисципліни (S — Наука, T — Технології, E — Інженерія, M — Математика). Дисципліни на III та IV місцях потребують додаткових методичних рекомендацій для педагогів.</p>
-                <p>Після проведення опитування та надання рекомендацій вчителям, повторне опитування показує дієвість методу — зацікавленість учнів зростає.</p>
+                <p>За середніми відповідями класу визначається ранжування дисциплін — Наука (S), Технології (T), Інженерія (E), Математика (M).</p>
+                <p><strong>У результаті вчителі отримують</strong> зрозуміле ранжування за середнім значенням до кожної дисципліни з акроніму <span class="logo-stem-letters" style="flex-wrap:wrap;vertical-align:middle" aria-hidden="true"><span class="logo-sl logo-sl--s">S</span><span class="logo-sl logo-sl--t">T</span><span class="logo-sl logo-sl--e">E</span><span class="logo-sl logo-sl--m">M</span></span> — наука, технології, інженерія, математика.</p>
+                <p>Після проведення опитування та надання рекомендацій вчителям повторне опитування зазвичай показує зміщення інтересів учнів у бажаний бік.</p>
             </div>
         </div>
     </section>
@@ -288,7 +318,7 @@
         <div class="container">
             <div class="footer-grid">
                 <div class="footer-brand">
-                    <a href="index.html" class="logo" aria-label="STEM Diagnostic"><span class="logo-icon" aria-hidden="true">S</span><span class="logo-word">TEM Diagnostic</span></a>
+                    <a href="index.html" class="logo" aria-label="STEM Diagnostic"><span class="logo-stem-letters" aria-hidden="true"><span class="logo-sl logo-sl--s">S</span><span class="logo-sl logo-sl--t">T</span><span class="logo-sl logo-sl--e">E</span><span class="logo-sl logo-sl--m">M</span></span><span class="logo-tail">Diagnostic</span></a>
                     <p>Діагностика зацікавленості учнів у STEM-дисциплінах</p>
                 </div>
                 <div class="footer-links">
@@ -299,11 +329,15 @@
                 </div>
             </div>
             <div class="footer-bottom">
-                <p>&copy; 2025 STEM. Шкільний діагностичний інструмент. Всі права захищені.</p>
+                <p>&copy; 2026 STEM. Шкільний діагностичний інструмент. Всі права захищені.</p>
                 <p>Автори дослідження: Ярослав Сапсай, Ірина Сапсай</p>
             </div>
         </div>
     </footer>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
     <script src="app.js"></script>
+    <script src="teacher-hub-charts.js"></script>
+    <script src="teacher-hub-demo.js"></script>
+    <script src="director-analytics-demo.js?v=20260517"></script>
 </body>
 </html>
